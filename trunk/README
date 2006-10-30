@@ -14,15 +14,7 @@ This contains two files cartdemo.php and responsehandlerdemo.php
   This file demonstrates the steps required to add items, shipping, taxes and 
   merchant-calculations to the cart before it is posted to the Checkout server. 
   There are three use case functions defined with different settings for 
-  shipping and taxes. 
-  All the use cases invoke the send_google_req function which posts the cart to
-  the specified server and if the XML API was correct, a redirect URL is returned. 
-  This can be used to verify that the cart XML being generated is correct. 
-  The library googlecart.php also has another function which returns the HTML code 
-  for the for the Checkout button and can be directly incorporated to the 
-  merchant's site to test cart posting with the standard technique. 
-  ( For details on differences between the standard and alternate methods of 
-    posting refer the Developer's guide for Checkout)
+  shipping and taxes along with different button usages.
 
   b)responsehandler.php: 
   ----------------------
@@ -92,7 +84,6 @@ define and add XML entries by defining objects of these classes.
   each result in the merchant-calculations-result sent from the 
   merchant in response to a callback.
   
-
   h) googlemerchantcalculations.php:
   ----------------------------------
   In order to process merchant calculations, an instance of this
@@ -102,7 +93,7 @@ define and add XML entries by defining objects of these classes.
   f) "xml-processing" directory:
   ------------------------------
 
-    i) xmlwriter.php:
+    i) xmlbuilder.php:
     -----------------
     This class generates XML and consists of "push" and "pop"
     methods to add open and close tags respectively.
@@ -111,12 +102,12 @@ define and add XML entries by defining objects of these classes.
 
     ii)xmlparser.php:
     -----------------
-   This class parses XML documents using the SAX parser and is
-   compatible with PHP v4 and 5. It converts them to DOM form
-   returning the XML data in a PHP associative array.    
-   This is used internally by the library classes to parse
-   XML requests and responses that are received from the 
-   Checkout server.
+    This class parses XML documents using the SAX parser and is
+    compatible with PHP v4 and 5. It converts them to DOM form
+    returning the XML data in a PHP associative array.    
+    This is used internally by the library classes to parse
+    XML requests and responses that are received from the 
+    Checkout server.
 
 3. googlemessage.log:
 The log file records all the notification and order processing commands that are 

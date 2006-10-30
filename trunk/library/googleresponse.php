@@ -215,15 +215,19 @@
       $session = curl_init($url);
 
       // Set the POST options.
-      curl_setopt ($session, CURLOPT_POST, true);
+      curl_setopt($session, CURLOPT_POST, true);
       curl_setopt($session, CURLOPT_HTTPHEADER, $header_arr);
-      curl_setopt ($session, CURLOPT_POSTFIELDS, $postargs);
+      curl_setopt($session, CURLOPT_POSTFIELDS, $postargs);
       curl_setopt($session, CURLOPT_HEADER, true);
       curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
 
       // Do the POST and then close the session
       $response = curl_exec($session);
-      curl_close($session);
+      if (curl_errno($session)) {
+	    die(curl_error($session));
+      } else {
+        curl_close($session);
+      }
 
       // Get HTTP Status code from the response
       $status_code = array();
@@ -232,20 +236,20 @@
       // Check for errors
       switch( $status_code[0] ) {
         case 200:
-       // Success
+          // Success
           break;
-       case 503: 
-         die('Error 503: Service unavailable.');
-         break;
-      case 403:
-        die('Error 403: Forbidden.');
-        break;
-      case 400:
-        die('Error 400:  Bad request.');
-        break;
-      default:
-        echo $response;
-        die('Error :' . $status_code[0]);
+        case 503:
+          die('Error 503: Service unavailable.');
+          break;
+        case 403:
+          die('Error 403: Forbidden.');
+          break;
+        case 400:
+          die('Error 400: Bad request.');
+          break;
+        default:
+          echo $response;
+          die('Error :' . $status_code[0]);
       }
       fwrite($message_log, sprintf("\n\r%s:- %s\n",date("D M j G:i:s T Y"),
           $response));
