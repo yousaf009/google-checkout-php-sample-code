@@ -55,8 +55,8 @@
       $xml_response));
 
   // Create new response object
-  $merchant_id = "530014911156791";
-  $merchant_key = "S0ETwSMMc3LfYa8VteqAuw";
+  $merchant_id = "";  //Your Merchant ID
+  $merchant_key = "";  //Your Merchant Key
   $server_type = "sandbox";
 
   $response = new GoogleResponse($merchant_id, $merchant_key,
@@ -75,11 +75,11 @@
 
   /* Commands to send the various order processing APIs
    * Send charge order : $response->SendChargeOrder($data[$root]
-   *    ['google-order-number']['VALUE'], $data[$root]['order-total']['VALUE'], $message_log);
+   *    ['google-order-number']['VALUE'], <amount>, $message_log);
    * Send proces order : $response->SendProcessOrder($data[$root]
    *    ['google-order-number']['VALUE'], $message_log);
    * Send deliver order: $response->SendDeliverOrder($data[$root]
-   *    ['google-order-number']['VALUE'], <carrier>, <tracking-no>,
+   *    ['google-order-number']['VALUE'], <carrier>, <tracking-number>,
    *    <send_mail>, $message_log);
    * Send archive order: $response->SendArchiveOrder($data[$root]
    *    ['google-order-number']['VALUE'], $message_log);
@@ -168,14 +168,18 @@
     }
     case "order-state-change-notification": {
       $response->SendAck();
-      $new_financial_state = $data[$root]['new-financial-order-state'];
-      $new_fulfillment_order = $data[$root]['new-fulfillment-order-state'];
+      $new_financial_state = $data[$root]['new-financial-order-state']['VALUE'];
+      $new_fulfillment_order = $data[$root]['new-fulfillment-order-state']['VALUE'];
 
       switch($new_financial_state) {
         case 'REVIEWING': {
           break;
        }
         case 'CHARGEABLE': {
+          //$response->SendProcessOrder($data[$root]['google-order-number']['VALUE'], 
+		  //    $message_log);
+	      //$response->SendChargeOrder($data[$root]['google-order-number']['VALUE'], 
+		  //    '', $message_log);
           break;
         }
         case 'CHARGING': {
@@ -191,6 +195,8 @@
           break;
         }
         case 'CANCELLED_BY_GOOGLE': {
+          //$response->SendBuyerMessage($data[$root]['google-order-number']['VALUE'],
+		  //    "Sorry, your order is cancelled by Google", true, $message_log);
           break;
         }
         default:
@@ -216,6 +222,10 @@
     }
     case "charge-amount-notification": {
       $response->SendAck();
+	  //$response->SendDeliverOrder($data[$root]['google-order-number']['VALUE'], 
+	  //    <carrier>, <tracking-number>, <send-email>, $message_log);
+      //$response->SendArchiveOrder($data[$root]['google-order-number']['VALUE'], 
+	  //    $message_log);
       break;
     }
     case "chargeback-amount-notification": {

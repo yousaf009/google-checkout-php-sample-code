@@ -122,9 +122,9 @@
     }
 
     function GetXML() {
-      require_once('xml-processing/xmlwriter.php');
+      require_once('xml-processing/xmlbuilder.php');
 
-      $xml_data = new XmlWriter();
+      $xml_data = new XmlBuilder();
 
       $xml_data->Push('checkout-shopping-cart',
           array('xmlns' => $this->schema_url));
@@ -340,15 +340,21 @@
 
     //Code for generating Checkout button 
     function CheckoutButtonCode($width = "180", $height = "46",
-        $variant="text", $loc="en_US", $style= "white") {
-      $data =
-        "<p><form method=\"POST\" action=\"". $this->checkout_url . "\">
-         <input type=\"hidden\" name=\"cart\" value=\"". base64_encode($this->GetXML()) ."\">
-         <input type=\"hidden\" name=\"signature\" value=\"". base64_encode($this->CalcHmacSha1($this->GetXML())). "\"> 
-	       <input type=\"image\" name=\"Checkout\" alt=\"Checkout\" 
-            src=\"". $this->server_url."?>buttons/checkout.gif?merchant_id=<?".$this->merchant_id."&w=".$width. "&h=".$height."&style=".$style."&variant=".$variant."&loc=".$loc."en_US\" 
-            height=\"".$height."\" width=\"".$width. "180\">
-        </form></p>";
+        $style= "white", $variant="text", $loc="en_US") {
+      if ($variant == "text") {
+        $data =
+          "<p><form method=\"POST\" action=\"". $this->checkout_url . "\">
+           <input type=\"hidden\" name=\"cart\" value=\"". base64_encode($this->GetXML()) ."\">
+           <input type=\"hidden\" name=\"signature\" value=\"". base64_encode($this->CalcHmacSha1($this->GetXML())). "\"> 
+           <input type=\"image\" name=\"Checkout\" alt=\"Checkout\" 
+              src=\"". $this->server_url."buttons/checkout.gif?merchant_id=".$this->merchant_id."&w=".$width. "&h=".$height."&style=".$style."&variant=".$variant."&loc=".$loc."\" 
+              height=\"".$height."\" width=\"".$width. "\" />
+          </form></p>";
+      } elseif ($variant == "disabled") {
+        $data = "<p><img alt=\"Checkout\" 
+              src=\"". $this->server_url."buttons/checkout.gif?merchant_id=".$this->merchant_id."&w=".$width. "&h=".$height."&style=".$style."&variant=".$variant."&loc=".$loc."\" 
+              height=\"".$height."\" width=\"".$width. "\" /></p>";
+      }
       return $data;
     }
 
