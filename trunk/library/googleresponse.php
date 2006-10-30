@@ -49,7 +49,7 @@
       if($server_type == "sandbox") 
         $this->server_url = "https://sandbox.google.com/";
       else
-        $this->server_url=  "https://checkout.google.com/";  
+        $this->server_url = "https://checkout.google.com/";  
 
       $this->schema_url = "http://checkout.google.com/schema/2";
       $this->base_url = $this->server_url."cws/v2/Merchant/" . 
@@ -89,12 +89,14 @@
       return true;
     }
 
-    function SendChargeOrder($google_order, $amount, $message_log) {
+    function SendChargeOrder($google_order, $amount='', $message_log) {
       $postargs = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
                    <charge-order xmlns=\"".$this->schema_url.
-                   "\" google-order-number=\"". $google_order. "\">
-                   <amount currency=\"USD\">" . $amount . "</amount>
-                   </charge-order>";
+                   "\" google-order-number=\"". $google_order. "\">";
+      if ($amount != '') {
+        $postargs .= "<amount currency=\"USD\">" . $amount . "</amount>";
+	  }
+	  $postargs .= "</charge-order>";
       return $this->SendReq($this->request_url, $this->GetAuthenticationHeaders(), 
           $postargs, $message_log); 
     }
@@ -187,7 +189,7 @@
           $postargs, $message_log);
     }
 
-    function SendUnArchiveOrder($google_order, $message_log) {
+    function SendUnarchiveOrder($google_order, $message_log) {
       $postargs = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
                    <unarchive-order xmlns=\"".
                    $this->schema_url."\" google-order-number=\"". 

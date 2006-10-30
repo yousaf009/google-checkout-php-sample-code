@@ -33,8 +33,8 @@
 
   function UseCase1() {
     //Create a new shopping cart object
-    $merchant_id = "530014911156791";
-    $merchant_key = "S0ETwSMMc3LfYa8VteqAuw";
+    $merchant_id = "";  //Your Merchant ID
+    $merchant_key = "";  //Your Merchant Key
     $server_type = "sandbox";
     $cart =  new GoogleCart($merchant_id, $merchant_key, $server_type); 
 
@@ -61,8 +61,8 @@
 
   function UseCase2() {
     //Create a new shopping cart object
-    $merchant_id = "530014911156791";
-    $merchant_key = "S0ETwSMMc3LfYa8VteqAuw";
+    $merchant_id = "";  //Your Merchant ID
+    $merchant_key = "";  //Your Merchant Key
     $server_type = "sandbox";
     $cart =  new GoogleCart($merchant_id, $merchant_key, $server_type); 
 
@@ -115,8 +115,8 @@
 
   function UseCase3() {
     //Create a new shopping cart object
-    $merchant_id = "530014911156791";
-    $merchant_key = "S0ETwSMMc3LfYa8VteqAuw";
+    $merchant_id = "";  //Your Merchant ID
+    $merchant_key = "";  //Your Merchant Key
     $server_type = "sandbox";
     $cart =  new GoogleCart($merchant_id, $merchant_key, $server_type); 
 
