@@ -25,6 +25,12 @@
   require_once('library/googletaxrule.php');
   require_once('library/googletaxtable.php');
 
+  //Invoke any of the provided use cases
+  
+  UseCase1();
+  UseCase2();
+  UseCase3();
+
   function UseCase1() {
     //Create a new shopping cart object
     $merchant_id = "530014911156791";
@@ -43,13 +49,14 @@
     $cart->AddItem($item2);
     $cart->AddItem($item3);
 
-    //Display XML data
-    $data = $cart->GetXML();
-    echo $data;
+	echo "<h2>Example 1: Small button with white background</h2>";
 
-    //Send request using curl for test
-    send_google_req($cart->request_url, $cart->merchant_id, 
-        $cart->merchant_key, $data, "");
+    //Display XML data
+    echo htmlentities($cart->GetXML());
+
+    //Small button with white background
+    echo $cart->CheckoutButtonCode("160", "43", "white", "text");
+
   }
 
   function UseCase2() {
@@ -97,13 +104,13 @@
 
     $cart->AddTaxTables($tax_table);
 
-    //Display XML data
-    $data = $cart->GetXML();
-    echo $data;
+	echo "<h2>Example 2: Medium button with colored background</h2>";
 
-    //Send request using curl for test
-    send_google_req($cart->request_url, $cart->merchant_id, 
-        $cart->merchant_key, $data, "");
+    //Display XML data
+    echo htmlentities($cart->GetXML());
+
+    //Medium button with colored background
+    echo $cart->CheckoutButtonCode("168", "44", "trans", "text");
   }
 
   function UseCase3() {
@@ -129,7 +136,6 @@
 
     //Add merchant calculations options
     $cart->SetMerchantCalculations(
-        //"http://manifoldreality.org/gtest/vignesh/php-sample-code/demo/responsehandlerdemo.php", "true","true", "true");
        "https://www.example.com/shopping/merchantCalc", "true", "true", "true");
     $ship = new GoogleShipping("merchant-calc", 
         "merchant-calculated", 5, "USD", "ALL");
@@ -143,67 +149,14 @@
     $tax_table->AddTaxRules($tax_rule);
     $cart->AddTaxTables($tax_table);
 
+	echo "<h2>Example 3: Disabled - Large button with white background</h2>";
 
     //Display XML data
-    $data = $cart->GetXML();
-    echo $data;
+    echo htmlentities($cart->GetXML());
 
-    //Send request using curl for test
-    send_google_req($cart->request_url, $cart->merchant_id, 
-        $cart->merchant_key, $data, "");
+    //Disabled: Large button with white background
+    echo $cart->CheckoutButtonCode("180", "46", "white", "disabled");
   }
 
-  function send_google_req($url, $merid, $merkey,
-      $postargs, $message_log) {
-    // Get the curl session object
-    $session = curl_init($url);
-
-   // Set the header array
-    $header_string_1 = "Authorization: Basic ".base64_encode($merid.':'.$merkey);
-    $header_string_2 = "Content-Type: application/xml";
-    $header_string_3 = "Accept: application/xml";
-
-    // Set the POST options.
-    curl_setopt ($session, CURLOPT_POST, true);
-    curl_setopt($session, CURLOPT_HTTPHEADER, array($header_string_1, $header_string_2, $header_string_3));
-    curl_setopt ($session, CURLOPT_POSTFIELDS, $postargs);
-    curl_setopt($session, CURLOPT_HEADER, true);
-    curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
-
-    // Do the POST and then close the session
-    $response = curl_exec($session);
-    curl_close($session);
-
-    // Get HTTP Status code from the response
-    $status_code = array();
-    preg_match('/\d\d\d/', $response, $status_code);
-
-    // Check for errors
-    switch( $status_code[0] ) {
-      case 200:
-      // Success
-        break;
-      case 503:
-        die('Error 503: Service unavailable.');
-        break;
-      case 403:
-        die('Error 403: Forbidden.');
-        break;
-      case 400:
-        die('Error 400:  Bad request.');
-        break;
-      default:
-        echo $response;
-       die('Error :' . $status_code[0]);
-    }
-    echo $response;
-    echo $status_code[0];
-  }
-
-  //Invoke any of the provided use cases
-  
-  //UseCase1();
-  //UseCase2();
-  //UseCase3();
-  
+ 
 ?>

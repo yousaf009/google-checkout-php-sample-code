@@ -59,7 +59,7 @@
   $merchant_key = "S0ETwSMMc3LfYa8VteqAuw";
   $server_type = "sandbox";
 
- $response =  new GoogleResponse($merchant_id, $merchant_key,
+  $response = new GoogleResponse($merchant_id, $merchant_key,
       $xml_response, $server_type);
   $root = $response->root;
   $data = $response->data;
@@ -86,21 +86,17 @@
    *
    */
 
-  switch ($response->root) {
+  switch ($root) {
     case "request-received": {
-      $response->SendAck();
       break;
     }
     case "error": {
-      $response->SendAck();
       break;
     }
     case "diagnosis": {
-      $response->SendAck();
       break;
     }
     case "checkout-redirect": {
-      $response->SendAck();
       break;
     }
     case "merchant-calculation-callback": {
@@ -118,7 +114,7 @@
 
         // Loop through each shipping method if merchant-calculated shipping
         // support is to be provided
-  if(isset($data[$root]['calculate']['shipping'])) {
+        if(isset($data[$root]['calculate']['shipping'])) {
           $shipping = get_arr_result($data[$root]['calculate']['shipping']['method']);
           foreach($shipping as $curr_ship) {
             $name = $curr_ship['name'];

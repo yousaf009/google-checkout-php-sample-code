@@ -38,9 +38,9 @@
     }
 
     function GetXML() {
-      require_once('xml-processing/xmlwriter.php');
+      require_once('xml-processing/xmlbuilder.php');
 
-      $xml_data = new XmlWriter();
+      $xml_data = new XmlBuilder();
       $xml_data->Push('merchant-calculation-results', 
           array('xmlns' => $this->schema_url));
       $xml_data->Push('results');
