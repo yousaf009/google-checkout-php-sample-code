@@ -28,8 +28,8 @@
   //Invoke any of the provided use cases
   
   UseCase1();
-  UseCase2();
-  UseCase3();
+  //UseCase2();
+  //UseCase3();
 
   function UseCase1() {
     //Create a new shopping cart object
@@ -39,24 +39,31 @@
     $cart =  new GoogleCart($merchant_id, $merchant_key, $server_type); 
 
     //Add items to the cart
-    $item1 = new GoogleItem("Dry Food Pack AA1453", 
-        " pack of highly nutritious dried food for emergency", 1, 35);
-    $item2 = new GoogleItem("MegaSound 2GB MP3 Player", 
-        "Portable MP3 player - stores 500 songs", 1, 178);
-    $item3 = new GoogleItem("AA Rechargeable Battery Pack", 
-        "Battery pack containing four AA rechargeable batteries", 1 , 12 );
+    $item1 = new GoogleItem("MegaSound 2GB MP3 Player", 
+		"Portable MP3 player - stores 500 songs", 1, 178);
+    $item2 = new GoogleItem("AA Rechargeable Battery Pack", 
+		"Battery pack containing four AA rechargeable batteries", 1 , 12);
     $cart->AddItem($item1);
     $cart->AddItem($item2);
-    $cart->AddItem($item3);
 
-	echo "<h2>Example 1: Small button with white background</h2>";
+    //Add shipping options
+    $ship = new GoogleShipping("Ground", "flat-rate", 5);
+    $ship->SetAllowedCountryArea("CONTINENTAL_48");
+    $cart->AddShipping($ship);
 
-    //Display XML data
-    echo htmlentities($cart->GetXML());
+    $ship = new GoogleShipping("2nd Day", "flat-rate", 10);
+    $ship->SetAllowedCountryArea("FULL_50_STATES");
+    $cart->AddShipping($ship);
 
-    //Small button with white background
-    echo $cart->CheckoutButtonCode("160", "43", "white", "text");
+    //Add tax options
+    $tax_rule = new GoogleTaxRule("default", 0.08);
+    $tax_rule->SetStateAreas( array("CA") );
+    $tax_table = new GoogleTaxTable("default");
+    $tax_table->AddTaxRules($tax_rule);
+    $cart->AddTaxTables($tax_table);
 
+	//Display Google Checkout button
+    echo $cart->CheckoutButtonCode("large");
   }
 
   function UseCase2() {
@@ -104,13 +111,11 @@
 
     $cart->AddTaxTables($tax_table);
 
-	echo "<h2>Example 2: Medium button with colored background</h2>";
-
     //Display XML data
     echo htmlentities($cart->GetXML());
 
-    //Medium button with colored background
-    echo $cart->CheckoutButtonCode("168", "44", "trans", "text");
+	//Display a medium button with a transparent background
+    echo $cart->CheckoutButtonCode("medium", "trans");
   }
 
   function UseCase3() {
@@ -149,13 +154,11 @@
     $tax_table->AddTaxRules($tax_rule);
     $cart->AddTaxTables($tax_table);
 
-	echo "<h2>Example 3: Disabled - Large button with white background</h2>";
-
     //Display XML data
     echo htmlentities($cart->GetXML());
 
-    //Disabled: Large button with white background
-    echo $cart->CheckoutButtonCode("180", "46", "white", "disabled");
+	//Display a disabled, small button with a white background
+    echo $cart->CheckoutButtonCode("small", "white", "disabled");
   }
 
  

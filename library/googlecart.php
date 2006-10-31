@@ -339,8 +339,29 @@
     }
 
     //Code for generating Checkout button 
-    function CheckoutButtonCode($width = "180", $height = "46",
-        $style= "white", $variant="text", $loc="en_US") {
+    function CheckoutButtonCode($size="large", $style="white", 
+        $variant="text", $loc="en_US") {
+
+      switch ($size) {
+		case "large":
+			$width = "180";
+			$height = "46";
+			break;
+
+		case "medium":
+			$width = "168";
+			$height = "44";
+			break;
+
+		case "small":
+			$width = "160";
+			$height = "43";
+			break;
+		
+		default:
+			break;
+	  }
+
       if ($variant == "text") {
         $data =
           "<p><form method=\"POST\" action=\"". $this->checkout_url . "\">
