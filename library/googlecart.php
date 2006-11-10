@@ -208,6 +208,8 @@
             }
 
             if($ship->excluded_restrictions) { 
+              $xml_data->Push('allowed-areas');
+              $xml_data->Pop('allowed-areas');
               $xml_data->Push('excluded-areas');
               if($ship->excluded_country_area != "")
                 $xml_data->Element('us-country-area','',
