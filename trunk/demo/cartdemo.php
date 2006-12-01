@@ -57,7 +57,7 @@
 
     //Add tax options
     $tax_rule = new GoogleTaxRule("default", 0.08);
-    $tax_rule->SetStateAreas( array("CA") );
+    $tax_rule->SetStateAreas("CA");
     $tax_table = new GoogleTaxTable("default");
     $tax_table->AddTaxRules($tax_rule);
     $cart->AddTaxTables($tax_table);
@@ -86,7 +86,7 @@
 
     //Add shipping options
     $ship = new GoogleShipping("flat", "flat-rate", 5);
-    $ship->SetAllowedStateAreas(array("NY", "CA"));
+    $ship->SetAllowedStateAreas( array("NY", "CA") );
     $cart->AddShipping($ship);
 
     $ship = new GoogleShipping("pickup", "pickup", 10);
@@ -100,8 +100,8 @@
     $cart->AddTaxTables($tax_table);
 
     $tax_rule = new GoogleTaxRule("alternate", 0.05);
-    $tax_rule->SetZipPatterns( array("94305", "10027") );
-    $tax_rule->SetStateAreas( array("CA") );
+    $tax_rule->SetZipPatterns( array("54305", "10027") );
+    $tax_rule->SetStateAreas("CA");
     $tax_table = new GoogleTaxTable("alternate", "test");
     $tax_table->AddTaxRules($tax_rule);
 
