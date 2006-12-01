@@ -56,11 +56,18 @@
     }
 
     function SetStateAreas($areas) {
-      $this->state_areas_arr = $areas;
+    	if(is_array($areas))
+      	$this->state_areas_arr = $areas;
+      else
+      	$this->state_areas_arr = array($areas);
     }
 
     function SetZipPatterns($zips) {
-      $this->zip_patterns_arr = $zips;
+    	if(is_array($zips))
+      	$this->zip_patterns_arr = $zips;
+      else
+      	$this->zip_patterns_arr = array($zips);
+      
     }
 
     function SetCountryArea($country_area) {

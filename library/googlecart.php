@@ -259,77 +259,97 @@
       }
 
       //Set Default and Alternate tax tables
-      if( (count($this->alternate_tax_table_arr) != 0) || 
-          (isset($this->default_tax_table))) {
+      if( (count($this->alternate_tax_table_arr) != 0) || (isset($this->default_tax_table))) {
         if($this->merchant_calculated != "")
-          $xml_data->Push('tax-tables', 
-              array('merchant-calculated' => $this->merchant_calculated));
+          $xml_data->Push('tax-tables', array('merchant-calculated' => $this->merchant_calculated));
         else
           $xml_data->Push('tax-tables');
 
         if(isset($this->default_tax_table)) {
-          $xml_data->Push('default-tax-table');
-          $xml_data->Push('tax-rules');
           $curr_table = $this->default_tax_table;
           foreach($curr_table->tax_rules_arr as $curr_rule) {
-            $xml_data->Push('default-tax-rule');
-            $xml_data->Element('shipping-taxed', $curr_rule->shipping_taxed);
-            $xml_data->Element('rate', $curr_rule->tax_rate);
-            $xml_data->Push('tax-area');
 
-            if($curr_rule->country_area != "")
-              $xml_data->Element('us-country-area','',
-                  array('country-area' => $curr_rule->country_area));
-            foreach($curr_rule->state_areas_arr as $current){
-              $xml_data->Push('us-state-area');
-              $xml_data->Element('state', $current);
-              $xml_data->Pop('us-state-area');
-            }
-            foreach($curr_rule->zip_patterns_arr as $current){
-              $xml_data->Push('us-zip-area');
-              $xml_data->Element('zip-pattern', $current);
-              $xml_data->Pop('us-zip-area');
-            }
-            $xml_data->Pop('tax-area');
-            $xml_data->Pop('default-tax-rule');
+	
+	          $xml_data->Push('default-tax-table');
+		          $xml_data->Push('tax-rules');
+				    	foreach($curr_rule->state_areas_arr as $current) {
+		            $xml_data->Push('default-tax-rule');
+		            
+			            $xml_data->Element('shipping-taxed', $curr_rule->shipping_taxed);
+			            $xml_data->Element('rate', $curr_rule->tax_rate);
+			            $xml_data->Push('tax-area');
+			            if($curr_rule->country_area != "")
+			              $xml_data->Element('us-country-area','', array('country-area' => $curr_rule->country_area));
+			              $xml_data->Push('us-state-area');
+			             	 $xml_data->Element('state', $current);
+			              $xml_data->Pop('us-state-area');
+				
+			            $xml_data->Pop('tax-area');
+		            $xml_data->Pop('default-tax-rule');
+							}
+							foreach($curr_rule->zip_patterns_arr as $current) {
+		            $xml_data->Push('default-tax-rule');
+		            
+			            $xml_data->Element('shipping-taxed', $curr_rule->shipping_taxed);
+			            $xml_data->Element('rate', $curr_rule->tax_rate);
+			            $xml_data->Push('tax-area');
+		
+			            if($curr_rule->country_area != "")
+			              $xml_data->Element('us-country-area','', array('country-area' => $curr_rule->country_area));
+			              $xml_data->Push('us-zip-area');
+			             	 $xml_data->Element('zip-pattern', $current);
+			              $xml_data->Pop('us-zip-area');
+			            $xml_data->Pop('tax-area');
+		            $xml_data->Pop('default-tax-rule');
+							}
+	          $xml_data->Pop('tax-rules');
+	          $xml_data->Pop('default-tax-table');
+
           }
-          $xml_data->Pop('tax-rules');
-          $xml_data->Pop('default-tax-table');
+          
         }
 
         if(count($this->alternate_tax_table_arr) != 0) {
           $xml_data->Push('alternate-tax-tables');
           foreach($this->alternate_tax_table_arr as $curr_table) {
-            $xml_data->Push('alternate-tax-table',
-                array('standalone' => $curr_table->standalone,
-                    'name' => $curr_table->name));
-            $xml_data->Push('alternate-tax-rules');
-
-            foreach($curr_table->tax_rules_arr as $curr_rule) {
-              $xml_data->Push('alternate-tax-rule');
-              $xml_data->Element('rate', $curr_rule->tax_rate);
-              $xml_data->Push('tax-area');
-
-              if($curr_rule->country_area != "")
-                $xml_data->Element('us-country-area','',
-                    array('country-area' => $curr_rule->country_area));
-              foreach($curr_rule->state_areas_arr as $current){
-                $xml_data->Push('us-state-area');
-                $xml_data->Element('state', $current);
-                $xml_data->Pop('us-state-area');
-              }
-              foreach($curr_rule->zip_patterns_arr as $current){
-                $xml_data->Push('us-zip-area');
-                $xml_data->Element('zip-pattern', $current);
-                $xml_data->Pop('us-zip-area');
-              }
-              $xml_data->Pop('tax-area');
-              $xml_data->Pop('alternate-tax-rule');
-            }
-            $xml_data->Pop('alternate-tax-rules');
-            $xml_data->Pop('alternate-tax-table');
-          }
-          $xml_data->Pop('alternate-tax-tables');
+						foreach($curr_table->tax_rules_arr as $curr_rule) {
+	           	$xml_data->Push('alternate-tax-table',array('standalone' => $curr_table->standalone, 'name' => $curr_table->name));
+	 		       	  $xml_data->Push('alternate-tax-rules');
+						    	foreach($curr_rule->state_areas_arr as $current) {
+				            $xml_data->Push('alternate-tax-rule');
+				            
+					            $xml_data->Element('shipping-taxed', $curr_rule->shipping_taxed);
+					            $xml_data->Element('rate', $curr_rule->tax_rate);
+					            $xml_data->Push('tax-area');
+					            if($curr_rule->country_area != "")
+					              $xml_data->Element('us-country-area','', array('country-area' => $curr_rule->country_area));
+					              $xml_data->Push('us-state-area');
+					             	 $xml_data->Element('state', $current);
+					              $xml_data->Pop('us-state-area');
+						
+					            $xml_data->Pop('tax-area');
+				            $xml_data->Pop('alternate-tax-rule');
+									}
+									foreach($curr_rule->zip_patterns_arr as $current) {
+				            $xml_data->Push('alternate-tax-rule');
+				            
+					            $xml_data->Element('shipping-taxed', $curr_rule->shipping_taxed);
+					            $xml_data->Element('rate', $curr_rule->tax_rate);
+					            $xml_data->Push('tax-area');
+				
+					            if($curr_rule->country_area != "")
+					              $xml_data->Element('us-country-area','', array('country-area' => $curr_rule->country_area));
+					              $xml_data->Push('us-zip-area');
+					             	 $xml_data->Element('zip-pattern', $current);
+					              $xml_data->Pop('us-zip-area');
+					            $xml_data->Pop('tax-area');
+				            $xml_data->Pop('alternate-tax-rule');
+									}
+		            $xml_data->Pop('alternate-tax-rules');
+	            $xml_data->Pop('alternate-tax-table');
+	          }
+	         }
+	         $xml_data->Pop('alternate-tax-tables');
         }
         $xml_data->Pop('tax-tables');
       }
