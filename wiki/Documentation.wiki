@@ -1,0 +1,8 @@
+#labels Featured
+#Documentation.
+
+= Introduction =
+
+The project's documentation currently resides at http://code.google.com/apis/checkout/samples/Google_Checkout_Sample_Code_PHP.html.
+
+Feel free to add tips and tricks learnt when using the code on this wiki.
