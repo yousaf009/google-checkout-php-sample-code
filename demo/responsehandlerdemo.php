@@ -174,7 +174,7 @@
       switch($new_financial_state) {
         case 'REVIEWING': {
           break;
-       }
+        }
         case 'CHARGEABLE': {
           //$response->SendProcessOrder($data[$root]['google-order-number']['VALUE'], 
 		  //    $message_log);
@@ -219,6 +219,7 @@
         default:
           break;
       }
+	  break;
     }
     case "charge-amount-notification": {
       $response->SendAck();
@@ -240,9 +241,8 @@
       $response->SendAck();
       break;
     }
-    default: {
+    default:
       break;
-    }
   }
   /* In case the XML API contains multiple open tags
      with the same value, then invoke this function and
