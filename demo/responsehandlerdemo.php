@@ -177,9 +177,9 @@
         }
         case 'CHARGEABLE': {
           //$response->SendProcessOrder($data[$root]['google-order-number']['VALUE'], 
-		  //    $message_log);
-	      //$response->SendChargeOrder($data[$root]['google-order-number']['VALUE'], 
-		  //    '', $message_log);
+          //    $message_log);
+          //$response->SendChargeOrder($data[$root]['google-order-number']['VALUE'], 
+          //    '', $message_log);
           break;
         }
         case 'CHARGING': {
@@ -196,7 +196,7 @@
         }
         case 'CANCELLED_BY_GOOGLE': {
           //$response->SendBuyerMessage($data[$root]['google-order-number']['VALUE'],
-		  //    "Sorry, your order is cancelled by Google", true, $message_log);
+          //    "Sorry, your order is cancelled by Google", true, $message_log);
           break;
         }
         default:
@@ -219,14 +219,14 @@
         default:
           break;
       }
-	  break;
+      break;
     }
     case "charge-amount-notification": {
       $response->SendAck();
-	  //$response->SendDeliverOrder($data[$root]['google-order-number']['VALUE'], 
-	  //    <carrier>, <tracking-number>, <send-email>, $message_log);
+      //$response->SendDeliverOrder($data[$root]['google-order-number']['VALUE'], 
+      //    <carrier>, <tracking-number>, <send-email>, $message_log);
       //$response->SendArchiveOrder($data[$root]['google-order-number']['VALUE'], 
-	  //    $message_log);
+      //    $message_log);
       break;
     }
     case "chargeback-amount-notification": {
