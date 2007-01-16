@@ -68,7 +68,7 @@
   */
   class XmlParser {
 
-    var $params= array(); //Stores the object representation of XML data
+    var $params = array(); //Stores the object representation of XML data
     var $root;
     var $global_index = -1;
 
@@ -145,8 +145,9 @@
         if($value != '') 
           $params[$tag]['VALUE'] = $value;
       }
-      else
+      else {
         $params = array();
+      }
       return $params;
     }
 
