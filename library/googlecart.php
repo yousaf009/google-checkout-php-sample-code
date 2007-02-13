@@ -147,7 +147,7 @@
             array('currency'=> $item->currency));
         $xml_data->Element('quantity', $item->quantity);
         if($item->merchant_private_data != '')
-            $xml_data->Element('merchant-private-date',
+            $xml_data->Element('merchant-private-item-data',
             $item->merchant_private_data);
         if($item->tax_table_selector != '')
           $xml_data->Element('tax-table-selector', $item->tax_table_selector);
