@@ -48,7 +48,8 @@ There are two folders and a log file in the top level directory of google-checko
 3. googlemessage.log: The log file records all the notification and order processing commands that are sent and received and can be useful information for debugging purposes.
 
 
-_If you're looking for the documentation of the earlier version of the PHP sample code, visit http://code.google.com/apis/checkout/samples/Google_Checkout_Sample_Code_PHP.html_
+_If you're looking for the documentation of the earlier version of the PHP sample code, visit http://code.google.com/apis/checkout/samples/Google_Checkout_Sample_Code_PHP.html _
+
 
 
 
