@@ -29,9 +29,7 @@
     var $address_id;
     var $shippable;
     var $ship_price;
-    var $ship_currency;
 
-    var $tax_currency;
     var $tax_amount;
 
     var $coupon_arr = array();
@@ -41,19 +39,14 @@
       $this->address_id = $address_id;
     }
 
-    function SetShippingDetails($name, $price, $money = "USD", 
-        $shippable = "true") {
+    function SetShippingDetails($name, $price, $shippable = "true") {
       $this->shipping_name = $name;
       $this->ship_price = $price;
-      $this->ship_currency = $money;
       $this->shippable = $shippable;
-        
-      
     }
 
-    function SetTaxDetails($amount, $currency = "USD") {
+    function SetTaxDetails($amount) {
       $this->tax_amount = $amount;
-      $this->tax_currency = $currency;
     }
 
     function AddCoupons($coupon) {
@@ -71,14 +64,12 @@
   class GoogleCoupons {
     var $coupon_valid;
     var $coupon_code;
-    var $coupon_currency;
     var $coupon_amount;
     var $coupon_message;
 
-    function googlecoupons($valid, $code, $amount, $currency, $message) {
+    function googlecoupons($valid, $code, $amount, $message) {
       $this->coupon_valid = $valid;
       $this->coupon_code = $code;
-      $this->coupon_currency = $currency;
       $this->coupon_amount = $amount;
       $this->coupon_message = $message;
     } 
@@ -90,17 +81,14 @@
   class GoogleGiftcerts {
     var $gift_valid;
     var $gift_code;
-    var $gift_currency;
     var $gift_amount;
     var $gift_message;
 
-    function googlegiftcerts($valid, $code, $amount, $currency, $message) {
+    function googlegiftcerts($valid, $code, $amount, $message) {
       $this->gift_valid = $valid;
       $this->gift_code = $code;
-      $this->gift_currency = $currency;
       $this->gift_amount = $amount;
       $this->gift_message = $message;
     }
   }
-
 ?>

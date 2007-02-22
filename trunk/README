@@ -41,9 +41,8 @@ define and add XML entries by defining objects of these classes.
   a) googlecart.php: 
   ------------------
   This is the main class which must be instantiated to post a cart. 
-  It requires a merchant ID and key to be set and there is an option 
-  to specify which server is to be used for the transactions 
-  (Sandbox or Production). 
+  It requires a merchant ID, Key, which server is to be used for the transactions 
+  (Sandbox or Production), and currency. 
   It also has methods to add items, shipping options, tax options and 
   merchant-calculation details.
 
@@ -54,43 +53,38 @@ define and add XML entries by defining objects of these classes.
 
   c) googleshipping.php: 
   ----------------------
-  This class is instantiated for every shipping option that is to be added to the cart. 
-  It requires the shipping name type an price to be specified. 
+  These classes are used for shipping methods that will be added to the cart. 
+  It requires the shipping name and price to be specified. 
   Other methods allow specification of the shipping restrictions.
 
-  d) googletaxrule.php:
+  d) googletax.php:
   ---------------------
-  This class is used to define all tax rules for the tax tables. These may be 
+  These classes are used to define tax rules for the tax tables. These may be 
   rules for default or alternate tax tables. Methods have been provided to add 
-  states and zip patterns for the tax rules.
-      
-  e) googletaxtable.php:
-  ----------------------
-  This class is used to aggregate all the defined tax rules to define a tax table.
-  This may be a default or alternate tax table identified by the "type" value.
+  country codes and postal areas.
 
-  f) googleresponse.php:
+  e) googleresponse.php:
   ----------------------
   An instance of this class is created in the responsehandlerdemo.php.
-  This again requires the merchant id and merchant key to be specified.
+  This again requires the merchant ID and merchant Key to be specified.
   There are methods provided to send all the different order processing
   commands. 
   All notifications are parsed and the merchant can take required action 
   when a particular notification is received. 
 
-  g) googleresult.php:
+  f) googleresult.php:
   --------------------
   This class is used for merchant-calculations and is invoked for 
   each result in the merchant-calculations-result sent from the 
   merchant in response to a callback.
   
-  h) googlemerchantcalculations.php:
+  g) googlemerchantcalculations.php:
   ----------------------------------
   In order to process merchant calculations, an instance of this
   class is created. It is used to aggregate merchant results and 
   respond with the XML response for the callback.    
 
-  f) "xml-processing" directory:
+  h) "xml-processing" directory:
   ------------------------------
 
     i) xmlbuilder.php:
