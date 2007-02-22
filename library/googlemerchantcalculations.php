@@ -27,10 +27,12 @@
  
   class GoogleMerchantCalculations {
      var $results_arr;
+     var $currency;
      var $schema_url = "http://checkout.google.com/schema/2";
 
-    function GoogleMerchantCalculations() {
+    function GoogleMerchantCalculations($currency = "GBP") {
       $this->results_arr = array();
+      $this->currency = $currency;
     }
 
     function AddResult($results) {
@@ -50,14 +52,14 @@
           $xml_data->Push('result', array('shipping-name' => 
               $result->shipping_name, 'address-id' => $result->address_id));
           $xml_data->Element('shipping-rate', $result->ship_price, 
-              array('currency' => $result->ship_currency));
+              array('currency' => $this->currency));
           $xml_data->Element('shippable', $result->shippable);
         } else
           $xml_data->Push('result', array('address-id' => $result->address_id));
 
         if($result->tax_amount != "")   
           $xml_data->Element('total-tax', $result->tax_amount, 
-              array('currency' => $result->tax_currency));
+              array('currency' => $this->currency));
 
         if((count($result->coupon_arr) != 0) || 
             (count($result->giftcert_arr) != 0) )  {
@@ -68,7 +70,7 @@
             $xml_data->Element('valid', $curr_coupon->coupon_valid);
             $xml_data->Element('code', $curr_coupon->coupon_code);
             $xml_data->Element('calculated-amount', $curr_coupon->coupon_amount,
-                array('currency'=> $curr_coupon->coupon_currency));
+                array('currency'=> $this->currency));
             $xml_data->Element('message', $curr_coupon->coupon_message);
             $xml_data->Pop('coupon-result');  
           }
@@ -77,7 +79,7 @@
             $xml_data->Element('valid', $curr_gift->gift_valid);
             $xml_data->Element('code', $curr_gift->gift_code);
             $xml_data->Element('calculated-amount', $curr_gift->gift_amount, 
-                array('currency'=> $curr_gift->gift_currency));
+                array('currency'=> $this->currency));
             $xml_data->Element('message', $curr_gift->gift_message);
             $xml_data->Pop('gift-result');  
           }
@@ -90,5 +92,4 @@
       return $xml_data->GetXML();
     }
   }
-
 ?>

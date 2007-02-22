@@ -26,6 +26,7 @@
   class GoogleCart {
     var $merchant_id;
     var $merchant_key;
+    var $currency;
     var $server_url;
     var $schema_url;
     var $base_url;
@@ -43,18 +44,19 @@
     var $merchant_calculations_url = "";
     var $accept_merchant_coupons = "";
     var $accept_gift_certificates = "";
-    var $default_tax_table;
 
     var $item_arr;
     var $shipping_arr;
-    var $alternate_tax_table_arr;
+    var $default_tax_rules_arr;
+    var $alternate_tax_tables_arr;
     var $xml_data;
 
     //The Constructor method which requires a merchant id, merchant key
     //and the operation type(sandbox or checkout)
-    function GoogleCart($id, $key, $server_type ="checkout") {
+    function GoogleCart($id, $key, $server_type = "sandbox", $currency = "GBP") {
       $this->merchant_id = $id;
       $this->merchant_key = $key;
+      $this->currency = $currency;
 
       if(strtolower($server_type) == "sandbox") 
         $this->server_url = "https://sandbox.google.com/checkout/";
@@ -74,7 +76,7 @@
       //The item, shipping and tax table arrays are initialized
       $this->item_arr = array();
       $this->shipping_arr = array(); 
-      $this->alternate_tax_table_arr = array();
+      $this->alternate_tax_tables_arr = array();
     }
 
     function SetCartExpiration($cart_expire) {
@@ -97,9 +99,8 @@
       $this->_SetBooleanValue('request_buyer_phone', $req, "");
     }
 
-    function SetMerchantCalculations($url, $tax_option = "false" ,
-        $coupons="false",
-        $gift_cert ="false") {
+    function SetMerchantCalculations($url, $tax_option = "false",
+        $coupons = "false", $gift_cert = "false") {
       $this->merchant_calculations_url = $url;
       $this->_SetBooleanValue('merchant_calculated', $tax_option, "false");
       $this->_SetBooleanValue('accept_merchant_coupons', $coupons, "false");
@@ -114,11 +115,13 @@
       $this->shipping_arr[] = $ship;
     }
 
-    function AddTaxTables($tax) {
-      if($tax->type == "default")
-        $this->default_tax_table = $tax;
-      else if ($tax->type == "alternate")
-        $this->alternate_tax_table_arr[] = $tax;
+    function AddDefaultTaxRules($rules) {
+      $this->default_tax_table = true;
+      $this->default_tax_rule_arr[] = $rules;
+    }
+
+    function AddAlternateTaxTables($tax) {
+      $this->alternate_tax_tables_arr[] = $tax;
     }
 
     function GetXML() {
@@ -144,11 +147,13 @@
         $xml_data->Element('item-name', $item->item_name);
         $xml_data->Element('item-description', $item->item_description);
         $xml_data->Element('unit-price', $item->unit_price,
-            array('currency'=> $item->currency));
+            array('currency' => $this->currency));
         $xml_data->Element('quantity', $item->quantity);
-        if($item->merchant_private_data != '')
-            $xml_data->Element('merchant-private-item-data',
-            $item->merchant_private_data);
+        if($item->merchant_private_item_data != '')
+          $xml_data->Element('merchant-private-item-data',
+              $item->merchant_private_item_data);
+		if($item->merchant_item_id != '')
+          $xml_data->Element('merchant-item-id', $item->merchant_item_id);
         if($item->tax_table_selector != '')
           $xml_data->Element('tax-table-selector', $item->tax_table_selector);
         $xml_data->Pop('item');
@@ -158,7 +163,6 @@
       if($this->merchant_private_data != '')
         $xml_data->Element('merchant-private-data',
             $this->merchant_private_data);
-
       $xml_data->Pop('shopping-cart');
 
       $xml_data->Push('checkout-flow-support');
@@ -175,14 +179,13 @@
       //Add the shipping methods
       foreach($this->shipping_arr as $ship) {
         //Pickup shipping handled in else part
-        if($ship->type == "flat-rate" ||
-            $ship->type == "merchant-calculated") {
-          $xml_data->Push($ship->type.'-shipping',
-              array('name' => $ship->name));
+        if($ship->type == "flat-rate-shipping" ||
+            $ship->type == "merchant-calculated-shipping") {
+          $xml_data->Push($ship->type, array('name' => $ship->name));
           $xml_data->Element('price', $ship->price,
-              array('currency' => $ship->currency));
+              array('currency' => $this->currency));
 
-          //Check if shipping restrictions have been specifd=ied
+          //Check if shipping restrictions have been specified
           if( $ship->allowed_restrictions  || 
               $ship->excluded_restrictions) {
             $xml_data->Push('shipping-restrictions');
@@ -229,12 +232,12 @@
             }
             $xml_data->Pop('shipping-restrictions');
           }
-          $xml_data->Pop($ship->type.'-shipping');
+          $xml_data->Pop($ship->type);
         }
         else if ($ship->type == "pickup") {
           $xml_data->Push('pickup', array('name' => $ship->name));
           $xml_data->Element('price', $ship->price, 
-              array('currency' => $ship->currency));
+              array('currency' => $this->currency));
           $xml_data->Pop('pickup');
         }
       }
@@ -259,100 +262,101 @@
       }
 
       //Set Default and Alternate tax tables
-      if( (count($this->alternate_tax_table_arr) != 0) || (isset($this->default_tax_table))) {
+      if( (count($this->alternate_tax_tables_arr) != 0) || (count($this->default_tax_rules_arr) != 0)) {
         if($this->merchant_calculated != "")
           $xml_data->Push('tax-tables', array('merchant-calculated' => $this->merchant_calculated));
         else
           $xml_data->Push('tax-tables');
 
-        if(isset($this->default_tax_table)) {
-          $curr_table = $this->default_tax_table;
-          foreach($curr_table->tax_rules_arr as $curr_rule) {
+        if(count($this->default_tax_rules_arr) != 0) {
+          $xml_data->Push('default-tax-table');
+          $xml_data->Push('tax-rules');
+          foreach($this->default_tax_rules_arr as $curr_rule) {
 
-	
-	          $xml_data->Push('default-tax-table');
-		          $xml_data->Push('tax-rules');
-				    	foreach($curr_rule->state_areas_arr as $current) {
-		            $xml_data->Push('default-tax-rule');
-		            
-			            $xml_data->Element('shipping-taxed', $curr_rule->shipping_taxed);
-			            $xml_data->Element('rate', $curr_rule->tax_rate);
-			            $xml_data->Push('tax-area');
-			            if($curr_rule->country_area != "")
-			              $xml_data->Element('us-country-area','', array('country-area' => $curr_rule->country_area));
-			              $xml_data->Push('us-state-area');
-			             	 $xml_data->Element('state', $current);
-			              $xml_data->Pop('us-state-area');
-				
-			            $xml_data->Pop('tax-area');
-		            $xml_data->Pop('default-tax-rule');
-							}
-							foreach($curr_rule->zip_patterns_arr as $current) {
-		            $xml_data->Push('default-tax-rule');
-		            
-			            $xml_data->Element('shipping-taxed', $curr_rule->shipping_taxed);
-			            $xml_data->Element('rate', $curr_rule->tax_rate);
-			            $xml_data->Push('tax-area');
-		
-			            if($curr_rule->country_area != "")
-			              $xml_data->Element('us-country-area','', array('country-area' => $curr_rule->country_area));
-			              $xml_data->Push('us-zip-area');
-			             	 $xml_data->Element('zip-pattern', $current);
-			              $xml_data->Pop('us-zip-area');
-			            $xml_data->Pop('tax-area');
-		            $xml_data->Pop('default-tax-rule');
-							}
-	          $xml_data->Pop('tax-rules');
-	          $xml_data->Pop('default-tax-table');
+            if($curr_rule->country_area != "") {
+              $xml_data->Push('default-tax-rule');
+              $xml_data->Element('shipping-taxed', $curr_rule->shipping_taxed);
+              $xml_data->Element('rate', $curr_rule->tax_rate);
+              $xml_data->Push('tax-area');
+              $xml_data->Element('us-country-area','', array('country-area' => $curr_rule->country_area));
+              $xml_data->Pop('tax-area');
+              $xml_data->Pop('default-tax-rule');
+            }
 
+            foreach($curr_rule->state_areas_arr as $current) {
+              $xml_data->Push('default-tax-rule');
+              $xml_data->Element('shipping-taxed', $curr_rule->shipping_taxed);
+              $xml_data->Element('rate', $curr_rule->tax_rate);
+              $xml_data->Push('tax-area');
+              $xml_data->Push('us-state-area');
+              $xml_data->Element('state', $current);
+              $xml_data->Pop('us-state-area');
+              $xml_data->Pop('tax-area');
+              $xml_data->Pop('default-tax-rule');
+            }
+
+            foreach($curr_rule->zip_patterns_arr as $current) {
+              $xml_data->Push('default-tax-rule');
+              $xml_data->Element('shipping-taxed', $curr_rule->shipping_taxed);
+              $xml_data->Element('rate', $curr_rule->tax_rate);
+              $xml_data->Push('tax-area');
+              $xml_data->Push('us-zip-area');
+              $xml_data->Element('zip-pattern', $current);
+              $xml_data->Pop('us-zip-area');
+              $xml_data->Pop('tax-area');
+              $xml_data->Pop('default-tax-rule');
+            }
           }
-          
+          $xml_data->Pop('tax-rules');
+          $xml_data->Pop('default-tax-table');
         }
 
-        if(count($this->alternate_tax_table_arr) != 0) {
+        if(count($this->alternate_tax_tables_arr) != 0) {
           $xml_data->Push('alternate-tax-tables');
-          foreach($this->alternate_tax_table_arr as $curr_table) {
-						foreach($curr_table->tax_rules_arr as $curr_rule) {
-	           	$xml_data->Push('alternate-tax-table',array('standalone' => $curr_table->standalone, 'name' => $curr_table->name));
-	 		       	  $xml_data->Push('alternate-tax-rules');
-						    	foreach($curr_rule->state_areas_arr as $current) {
-				            $xml_data->Push('alternate-tax-rule');
-				            
-					            $xml_data->Element('shipping-taxed', $curr_rule->shipping_taxed);
-					            $xml_data->Element('rate', $curr_rule->tax_rate);
-					            $xml_data->Push('tax-area');
-					            if($curr_rule->country_area != "")
-					              $xml_data->Element('us-country-area','', array('country-area' => $curr_rule->country_area));
-					              $xml_data->Push('us-state-area');
-					             	 $xml_data->Element('state', $current);
-					              $xml_data->Pop('us-state-area');
-						
-					            $xml_data->Pop('tax-area');
-				            $xml_data->Pop('alternate-tax-rule');
-									}
-									foreach($curr_rule->zip_patterns_arr as $current) {
-				            $xml_data->Push('alternate-tax-rule');
-				            
-					            $xml_data->Element('shipping-taxed', $curr_rule->shipping_taxed);
-					            $xml_data->Element('rate', $curr_rule->tax_rate);
-					            $xml_data->Push('tax-area');
-				
-					            if($curr_rule->country_area != "")
-					              $xml_data->Element('us-country-area','', array('country-area' => $curr_rule->country_area));
-					              $xml_data->Push('us-zip-area');
-					             	 $xml_data->Element('zip-pattern', $current);
-					              $xml_data->Pop('us-zip-area');
-					            $xml_data->Pop('tax-area');
-				            $xml_data->Pop('alternate-tax-rule');
-									}
-		            $xml_data->Pop('alternate-tax-rules');
-	            $xml_data->Pop('alternate-tax-table');
-	          }
-	         }
-	         $xml_data->Pop('alternate-tax-tables');
+          foreach($this->alternate_tax_tables_arr as $curr_table) {
+            $xml_data->Push('alternate-tax-table', array('standalone' => $curr_table->standalone, 'name' => $curr_table->name));
+            $xml_data->Push('alternate-tax-rules');
+
+            foreach($curr_table->tax_rules_arr as $curr_rule) {
+              if($curr_rule->country_area != "") {
+                $xml_data->Push('alternate-tax-rule');
+                $xml_data->Element('rate', $curr_rule->tax_rate);
+                $xml_data->Push('tax-area');
+                $xml_data->Element('us-country-area','', array('country-area' => $curr_rule->country_area));
+                $xml_data->Pop('tax-area');
+                $xml_data->Pop('alternate-tax-rule');
+              }
+
+              foreach($curr_rule->state_areas_arr as $current) {
+                $xml_data->Push('alternate-tax-rule');
+                $xml_data->Element('rate', $curr_rule->tax_rate);
+                $xml_data->Push('tax-area');
+                $xml_data->Push('us-state-area');
+                $xml_data->Element('state', $current);
+                $xml_data->Pop('us-state-area');
+                $xml_data->Pop('tax-area');
+                $xml_data->Pop('alternate-tax-rule');
+              }
+
+              foreach($curr_rule->zip_patterns_arr as $current) {
+                $xml_data->Push('alternate-tax-rule');
+                $xml_data->Element('rate', $curr_rule->tax_rate);
+                $xml_data->Push('tax-area');
+                $xml_data->Push('us-zip-area');
+                $xml_data->Element('zip-pattern', $current);
+                $xml_data->Pop('us-zip-area');
+                $xml_data->Pop('tax-area');
+                $xml_data->Pop('alternate-tax-rule');
+              }
+            }
+            $xml_data->Pop('alternate-tax-rules');
+            $xml_data->Pop('alternate-tax-table');
+          }
+          $xml_data->Pop('alternate-tax-tables');
         }
         $xml_data->Pop('tax-tables');
       }
+
       $xml_data->Pop('merchant-checkout-flow-support');
       $xml_data->Pop('checkout-flow-support');
       $xml_data->Pop('checkout-shopping-cart');
@@ -361,42 +365,58 @@
     }
 
     //Code for generating Checkout button 
-    function CheckoutButtonCode($size="large", $style="white", 
-        $variant="text", $loc="en_US") {
+    function CheckoutButtonCode($size = "large", $variant = true, $loc = "en_US") {
+
+      $size = strtolower($size);
 
       switch ($size) {
-		case "large":
-			$width = "180";
-			$height = "46";
-			break;
+        case "large":
+          $width = "180";
+          $height = "46";
+          break;
 
-		case "medium":
-			$width = "168";
-			$height = "44";
-			break;
+        case "medium":
+          $width = "168";
+          $height = "44";
+          break;
 
-		case "small":
-			$width = "160";
-			$height = "43";
-			break;
-		
-		default:
-			break;
-	  }
+        case "small":
+          $width = "160";
+          $height = "43";
+          break;
+        
+        default:
+          $width = "180";
+          $height = "46";
+          break;
+      }
+
+      switch ($variant) {
+        case true:
+            $variant = "text";
+            break;
+        case false:
+            $variant = "disabled";
+            break;
+        default:
+            $variant = "text";
+            break;
+      }
+
+      $style = "trans";
 
       if ($variant == "text") {
-        $data =
-          "<p><form method=\"POST\" action=\"". $this->checkout_url . "\">
-           <input type=\"hidden\" name=\"cart\" value=\"". base64_encode($this->GetXML()) ."\">
-           <input type=\"hidden\" name=\"signature\" value=\"". base64_encode($this->CalcHmacSha1($this->GetXML())). "\"> 
-           <input type=\"image\" name=\"Checkout\" alt=\"Checkout\" 
-              src=\"". $this->server_url."buttons/checkout.gif?merchant_id=".$this->merchant_id."&w=".$width. "&h=".$height."&style=".$style."&variant=".$variant."&loc=".$loc."\" 
-              height=\"".$height."\" width=\"".$width. "\" />
-          </form></p>";
+        $data = "<form method=\"POST\" action=\"". $this->checkout_url . "\">
+                <input type=\"hidden\" name=\"cart\" value=\"". base64_encode($this->GetXML()) ."\">
+                <input type=\"hidden\" name=\"signature\" value=\"". base64_encode($this->CalcHmacSha1($this->GetXML())). "\"> 
+                <input type=\"image\" name=\"Checkout\" alt=\"Checkout\" 
+                src=\"". $this->server_url."buttons/checkout.gif?merchant_id=".$this->merchant_id."&w=".$width. "&h=".$height."&style=".$style."&variant=".$variant."&loc=".$loc."\" 
+                height=\"".$height."\" width=\"".$width. "\" />
+                </form>";
       } elseif ($variant == "disabled") {
-        $data = "<p><img alt=\"Checkout\" 
-              src=\"". $this->server_url."buttons/checkout.gif?merchant_id=".$this->merchant_id."&w=".$width. "&h=".$height."&style=".$style."&variant=".$variant."&loc=".$loc."\" 
-              height=\"".$height."\" width=\"".$width. "\" /></p>";
+        $data = "<img alt=\"Checkout\" 
+                src=\"". $this->server_url."buttons/checkout.gif?merchant_id=".$this->merchant_id."&w=".$width. "&h=".$height."&style=".$style."&variant=".$variant."&loc=".$loc."\" 
+                height=\"".$height."\" width=\"".$width. "\" />";
       }
       return $data;
     }
@@ -432,7 +452,5 @@
       else
         eval('$this->'.$string.'="'.$default.'";');
     }
-
   }
-
 ?>

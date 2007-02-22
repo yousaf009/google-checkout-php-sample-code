@@ -55,12 +55,13 @@
       $xml_response));
 
   // Create new response object
-  $merchant_id = "";  //Your Merchant ID
-  $merchant_key = "";  //Your Merchant Key
+  $merchant_id = "";  // Your Merchant ID
+  $merchant_key = "";  // Your Merchant Key
   $server_type = "sandbox";
+  $currency = "USD";
 
   $response = new GoogleResponse($merchant_id, $merchant_key,
-      $xml_response, $server_type);
+      $xml_response, $server_type, $currency);
   $root = $response->root;
   $data = $response->data;
   fwrite($message_log, sprintf("\n\r%s:- %s\n",date("D M j G:i:s T Y"),
@@ -101,7 +102,7 @@
     }
     case "merchant-calculation-callback": {
       // Create the results and send it
-      $merchant_calc = new GoogleMerchantCalculations();
+      $merchant_calc = new GoogleMerchantCalculations($currency);
 
       // Loop through the list of address ids from the callback
       $addresses = get_arr_result($data[$root]['calculate']['addresses']['anonymous-address']);
@@ -110,7 +111,7 @@
         $country = $curr_address['country-code']['VALUE'];
         $city = $curr_address['city']['VALUE'];
         $region = $curr_address['region']['VALUE'];
-        $postal_code = $curr_address['region']['VALUE'];
+        $postal_code = $curr_address['postal-code']['VALUE'];
 
         // Loop through each shipping method if merchant-calculated shipping
         // support is to be provided
@@ -122,20 +123,19 @@
             $price = 10; // Modify this to get the actual price
             $shippable = "true"; // Modify this as required
             $merchant_result = new GoogleResult($curr_id);
-            $merchant_result->SetShippingDetails($name, $price, "USD",
-                $shippable);
+            $merchant_result->SetShippingDetails($name, $price, $shippable);
 
             if($data[$root]['calculate']['tax']['VALUE'] == "true") {
               //Compute tax for this address id and shipping type
               $amount = 15; // Modify this to the actual tax value
-              $merchant_result->SetTaxDetails($amount, "USD");
+              $merchant_result->SetTaxDetails($amount);
             }
 
             $codes = get_arr_result($data[$root]['calculate']['merchant-code-strings']
                 ['merchant-code-string']);
             foreach($codes as $curr_code) {
               //Update this data as required to set whether the coupon is valid, the code and the amount
-              $coupons = new GoogleCoupons("true", $curr_code['code'], 5, "USD", "test2");
+              $coupons = new GoogleCoupons("true", $curr_code['code'], 5, "test2");
               $merchant_result->AddCoupons($coupons);
             }
             $merchant_calc->AddResult($merchant_result);
@@ -145,13 +145,13 @@
           if($data[$root]['calculate']['tax']['VALUE'] == "true") {
             //Compute tax for this address id and shipping type
             $amount = 15; // Modify this to the actual tax value
-            $merchant_result->SetTaxDetails($amount, "USD");
+            $merchant_result->SetTaxDetails($amount);
           }
           $codes = get_arr_result($data[$root]['calculate']['merchant-code-strings']
               ['merchant-code-string']);
           foreach($codes as $curr_code) {
             //Update this data as required to set whether the coupon is valid, the code and the amount
-            $coupons = new GoogleCoupons("true", $curr_code['code'], 5, "USD", "test2");
+            $coupons = new GoogleCoupons("true", $curr_code['code'], 5, "test2");
             $merchant_result->AddCoupons($coupons);
           }
           $merchant_calc->AddResult($merchant_result);
