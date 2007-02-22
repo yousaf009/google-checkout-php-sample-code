@@ -28,28 +28,28 @@
     var $item_name; 
     var $item_description;
     var $unit_price;
-    var $currency;
     var $quantity;
-    var $merchant_private_data;
+    var $merchant_private_item_data;
+    var $merchant_item_id;
     var $tax_table_selector;
-       
-    function GoogleItem($name, $desc, $qty, $price, $money= "USD", 
-      $private_data = "", $tax_selector = "") {
+
+    function GoogleItem($name, $desc, $qty, $price) {
       $this->item_name = $name; 
       $this->item_description= $desc;
       $this->unit_price = $price;
       $this->quantity = $qty;
-      $this->currency= $money;
-      $this->merchant_private_data = $private_data;
-      $this->tax_table_selector= $tax_selector;
     }
     
-    function SetMerchantPrivateData($private_data) {
-      $this->merchant_private_data = $private_data;  
+    function SetMerchantPrivateItemData($private_data) {
+      $this->merchant_private_item_data = $private_data;  
+    }
+
+    function SetMerchantItemId($item_id) {
+      $this->merchant_item_id = $item_id;  
     }
     
     function SetTaxTableSelector($tax_selector) {
-      $this->tax_table_selector= $tax_selector;  
+      $this->tax_table_selector = $tax_selector;  
     }
   }
 ?>

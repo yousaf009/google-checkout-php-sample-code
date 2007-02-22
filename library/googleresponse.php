@@ -29,6 +29,7 @@
   class GoogleResponse {
     var $merchant_id;
     var $merchant_key;
+    var $currency;
     var $server_url;
     var $schema_url;
     var $base_url;
@@ -42,9 +43,10 @@
     var $data;
     var $xml_parser;
 
-    function GoogleResponse($id, $key, $response, $server_type ="checkout") {
+    function GoogleResponse($id, $key, $response, $server_type ="checkout", $currency = "GBP") {
       $this->merchant_id = $id;
       $this->merchant_key = $key;
+      $this->currency = $currency;
 
       if($server_type == "sandbox") 
         $this->server_url = "https://sandbox.google.com/checkout";
@@ -91,23 +93,23 @@
 
     function SendChargeOrder($google_order, $amount='', $message_log) {
       $postargs = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-                   <charge-order xmlns=\"".$this->schema_url.
-                   "\" google-order-number=\"". $google_order. "\">";
+                  <charge-order xmlns=\"".$this->schema_url.
+                  "\" google-order-number=\"". $google_order. "\">";
       if ($amount != '') {
-        $postargs .= "<amount currency=\"USD\">" . $amount . "</amount>";
-	  }
-	  $postargs .= "</charge-order>";
+        $postargs .= "<amount currency=\"" . $this->currency . "\">" . $amount . "</amount>";
+      }
+      $postargs .= "</charge-order>";
       return $this->SendReq($this->request_url, $this->GetAuthenticationHeaders(), 
           $postargs, $message_log); 
     }
 
     function SendRefundOrder($google_order, $amount, $reason, $comment, $message_log) {
       $postargs = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-                   <refund-order xmlns=\"".$this->schema_url.
-                   "\" google-order-number=\"". $google_order. "\">
-                   <reason>". $reason . "</reason>
-                   <amount currency=\"USD\">".htmlentities($amount)."</amount>
-                   <comment>". htmlentities($comment) . "</comment>
+                  <refund-order xmlns=\"".$this->schema_url.
+                  "\" google-order-number=\"". $google_order. "\">
+                  <reason>". $reason . "</reason>
+                  <amount currency=\"" . $this->currency . "\">".htmlentities($amount)."</amount>
+                  <comment>". htmlentities($comment) . "</comment>
                   </refund-order>";
       return $this->SendReq($this->request_url, $this->GetAuthenticationHeaders(), 
           $postargs, $message_log); 
@@ -115,10 +117,10 @@
 
     function SendCancelOrder($google_order, $reason, $comment, $message_log) {
       $postargs = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-                   <cancel-order xmlns=\"".$this->schema_url.
-                   "\" google-order-number=\"". $google_order. "\">
-                   <reason>". htmlentities($reason) . "</reason>
-                   <comment>". htmlentities($comment) . "</comment>
+                  <cancel-order xmlns=\"".$this->schema_url.
+                  "\" google-order-number=\"". $google_order. "\">
+                  <reason>". htmlentities($reason) . "</reason>
+                  <comment>". htmlentities($comment) . "</comment>
                   </cancel-order>";
       return $this->SendReq($this->request_url, $this->GetAuthenticationHeaders(),
           $postargs, $message_log);
@@ -126,35 +128,35 @@
 
     function SendTrackingData($google_order, $carrier, $tracking_no, $message_log) {
       $postargs = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-                   <add-tracking-data xmlns=\"". $this->schema_url . 
-                   "\" google-order-number=\"". $google_order . "\">
-                   <tracking-data>
-                   <carrier>". htmlentities($carrier) . "</carrier>
-                   <tracking-number>". $tracking_no . "</tracking-number>
-                   </tracking-data>
-                   </add-tracking-data>";
+                  <add-tracking-data xmlns=\"". $this->schema_url . 
+                  "\" google-order-number=\"". $google_order . "\">
+                  <tracking-data>
+                  <carrier>". htmlentities($carrier) . "</carrier>
+                  <tracking-number>". $tracking_no . "</tracking-number>
+                  </tracking-data>
+                  </add-tracking-data>";
       return $this->SendReq($this->request_url, $this->GetAuthenticationHeaders(),
           $postargs, $message_log);
     }
 
     function SendMerchantOrderNumber($google_order, $merchant_order, $message_log) {
       $postargs = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-                   <add-merchant-order-number xmlns=\"". $this->schema_url . 
-                   "\" google-order-number=\"". $google_order . "\">
-                     <merchant-order-number>" . $merchant_order . 
-                     "</merchant-order-number>
-                   </add-merchant-order-number>";     
+                  <add-merchant-order-number xmlns=\"". $this->schema_url . 
+                  "\" google-order-number=\"". $google_order . "\">
+                  <merchant-order-number>" . $merchant_order . 
+                  "</merchant-order-number>
+                  </add-merchant-order-number>";     
       return $this->SendReq($this->request_url, $this->GetAuthenticationHeaders(),
           $postargs, $message_log);
     }
 
     function SendBuyerMessage($google_order, $message, $send_mail="true",$message_log) {
       $postargs = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-                   <send-buyer-message xmlns=\"". $this->schema_url . 
-                   "\" google-order-number=\"". $google_order . "\">
-                     <message>" . $message . "</message>
-                     <send-mail>" . $send_mail . "</send-mail>
-                   </send-buyer-message>";     
+                  <send-buyer-message xmlns=\"". $this->schema_url . 
+                  "\" google-order-number=\"". $google_order . "\">
+                  <message>" . $message . "</message>
+                  <send-mail>" . $send_mail . "</send-mail>
+                  </send-buyer-message>";     
       return $this->SendReq($this->request_url, $this->GetAuthenticationHeaders(),
           $postargs, $message_log);
     }
@@ -169,31 +171,31 @@
 
     function SendDeliverOrder($google_order, $carrier, $tracking_no, $send_mail = "true", $message_log) {
       $postargs = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-                   <deliver-order xmlns=\"". $this->schema_url . 
-                   "\" google-order-number=\"". $google_order . "\">
-                   <tracking-data>
-                   <carrier>". htmlentities($carrier) . "</carrier>
-                   <tracking-number>". $tracking_no . "</tracking-number>
-                   </tracking-data>
-                   <send-email>". $send_mail . "</send-email>
-                   </deliver-order>";  
+                  <deliver-order xmlns=\"". $this->schema_url . 
+                  "\" google-order-number=\"". $google_order . "\">
+                  <tracking-data>
+                  <carrier>". htmlentities($carrier) . "</carrier>
+                  <tracking-number>". $tracking_no . "</tracking-number>
+                  </tracking-data>
+                  <send-email>". $send_mail . "</send-email>
+                  </deliver-order>";  
       return $this->SendReq($this->request_url, $this->GetAuthenticationHeaders(),
           $postargs, $message_log);
     }
 
     function SendArchiveOrder($google_order, $message_log) {
       $postargs = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-                   <archive-order xmlns=\"".$this->schema_url.
-                   "\" google-order-number=\"". $google_order. "\"/>";
+                  <archive-order xmlns=\"".$this->schema_url.
+                  "\" google-order-number=\"". $google_order. "\"/>";
       return $this->SendReq($this->request_url, $this->GetAuthenticationHeaders(),
           $postargs, $message_log);
     }
 
     function SendUnarchiveOrder($google_order, $message_log) {
       $postargs = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-                   <unarchive-order xmlns=\"".
-                   $this->schema_url."\" google-order-number=\"". 
-                   $google_order. "\"/>";
+                  <unarchive-order xmlns=\"".
+                  $this->schema_url."\" google-order-number=\"". 
+                  $google_order. "\"/>";
       return $this->SendReq($this->request_url, $this->GetAuthenticationHeaders(),
           $postargs, $message_log);
     }
@@ -207,7 +209,7 @@
       $headers = array();
       $headers[] = "Authorization: Basic ".base64_encode(
           $this->merchant_id.':'.$this->merchant_key);
-      $headers[] = "Content-Type: application/xml";
+      $headers[] = "Content-Type: application/xml; charset=UTF-8";
       $headers[] = "Accept: application/xml";
       return $headers; 
     }
@@ -226,7 +228,7 @@
       // Do the POST and then close the session
       $response = curl_exec($session);
       if (curl_errno($session)) {
-	    die(curl_error($session));
+        die(curl_error($session));
       } else {
         curl_close($session);
       }
@@ -263,6 +265,5 @@
                         $this->schema_url . "\"/>";
       echo $acknowledgment;
     }
-
   }
 ?>

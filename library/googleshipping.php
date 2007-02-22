@@ -16,56 +16,43 @@
  * limitations under the License.
  */
 
-/* This class is used to add the shipping options for the cart
- * There are 3 types of shipping supported
- * 1. Flat (Type:flat-rate)
- * 2. Pickup (Type:pickup)
- * 3. Merchant calculated (Type:merchant-calculated)
- *
- * Invoke a separate instance of this class for each type of shipping 
- * to be included
- * Required fields are shipping name, shipping  type and price 
- * Allowed and excluded country areas can be specified as part of constructor
- * arguments or using individual Set methods. Possible values here are
- * 1. CONTINENTAL_48
- * 2. FULL_50_STATES 
- * 3. ALL
- * State and zip patterns must be exclusively updated using their individual Set methods
- */
-  class GoogleShipping {
+  class GoogleFlatRateShipping {
 
-    var $type; 
     var $price;
-    var $currency;
     var $name;
+    var $type = "flat-rate-shipping";
 
-    var $allowed_state_areas_arr;
-    var $allowed_zip_patterns_arr;
-    var $excluded_state_areas_arr;
-    var $excluded_zip_patterns_arr;
-    var $allowed_country_area;
-    var $excluded_country_area;
     var $allowed_restrictions = false;
     var $excluded_restrictions = false;
 
-    function GoogleShipping($name, $type, $price, $money = "USD", 
-      $allowed_country_area="", 
-      $excluded_country_area="") {
+    var $allowed_country_area;
+    var $allowed_state_areas_arr;
+    var $allowed_zip_patterns_arr;
+
+    var $excluded_country_area;
+    var $excluded_state_areas_arr;
+    var $excluded_zip_patterns_arr;
+
+    function GoogleFlatRateShipping($name, $price) {
       $this->price = $price;
       $this->name = $name;
-      $this->type= strtolower($type);
-      $this->currency = $money;
-
-      if($allowed_country_area != "")
-        $this->SetAllowedCountryArea($allowed_country_area);
-
-      if($excluded_country_area != "")
-        $this->SetExcludedCountryArea($excluded_country_area);
 
       $this->allowed_state_areas_arr = array();
       $this->allowed_zip_patterns_arr = array();
+
       $this->excluded_state_areas_arr = array();
       $this->excluded_zip_patterns_arr = array();
+    }
+
+    function SetAllowedCountryArea($country_area) {
+      if($country_area == "CONTINENTAL_48" ||
+         $country_area == "FULL_50_STATES" || 
+         $country_area == "ALL" ) {
+        $this->allowed_country_area = $country_area;
+        $this->allowed_restrictions = true;
+      }
+      else
+        $this->allowed_country_area = "";
     }
 
     function SetAllowedStateAreas($areas) {
@@ -88,25 +75,99 @@
       $this->excluded_zip_patterns_arr = $zips;
     }
 
+    function SetExcludedCountryArea($country_area) {
+      if($country_area == "CONTINENTAL_48" ||
+         $country_area == "FULL_50_STATES" || 
+         $country_area == "ALL" ) {
+        $this->excluded_country_area = $country_area;
+        $this->excluded_restrictions = true;
+      }
+      else
+        $this->excluded_country_area = "";
+    }
+  }
+
+  class GoogleMerchantCalculatedShipping {
+
+    var $price;
+    var $name;
+    var $type = "merchant-calculated-shipping";
+
+    var $allowed_restrictions = false;
+    var $excluded_restrictions = false;
+
+    var $allowed_country_area;
+    var $allowed_state_areas_arr;
+    var $allowed_zip_patterns_arr;
+
+    var $excluded_country_area;
+    var $excluded_state_areas_arr;
+    var $excluded_zip_patterns_arr;
+
+    function GoogleMerchantCalculatedShipping($name, $price) {
+      $this->price = $price;
+      $this->name = $name;
+
+      $this->allowed_state_areas_arr = array();
+      $this->allowed_zip_patterns_arr = array();
+
+      $this->excluded_state_areas_arr = array();
+      $this->excluded_zip_patterns_arr = array();
+    }
+
     function SetAllowedCountryArea($country_area) {
       if($country_area == "CONTINENTAL_48" ||
-          $country_area == "FULL_50_STATES" || 
-          $country_area = "ALL" ) {
+         $country_area == "FULL_50_STATES" || 
+         $country_area == "ALL" ) {
         $this->allowed_country_area = $country_area;
         $this->allowed_restrictions = true;
       }
       else
         $this->allowed_country_area = "";
     }
+
+    function SetAllowedStateAreas($areas) {
+      $this->allowed_restrictions = true;
+      $this->allowed_state_areas_arr = $areas;
+    }
+
+    function SetAllowedZipPattens($zips) {
+      $this->allowed_restrictions = true;
+      $this->allowed_zip_patterns_arr = $zips;
+    }
+
+    function SetExcludedStateAreas($areas) {
+      $this->excluded_restrictions = true;
+      $this->excluded_state_areas_arr = $areas;
+    }
+
+    function SetExcludedZipPatternsStateAreas($zips) {
+      $this->excluded_restrictions = true;
+      $this->excluded_zip_patterns_arr = $zips;
+    }
+
     function SetExcludedCountryArea($country_area) {
       if($country_area == "CONTINENTAL_48" ||
-          $country_area == "FULL_50_STATES" || 
-          $country_area = "ALL" ) {
+         $country_area == "FULL_50_STATES" || 
+         $country_area == "ALL" ) {
         $this->excluded_country_area = $country_area;
         $this->excluded_restrictions = true;
       }
       else
         $this->excluded_country_area = "";
+    }
+  }
+
+  class GooglePickUp {
+
+    var $price;
+    var $name;
+    var $type;
+
+    function GoogleMerchantCalculatedShipping($name, $price) {
+      $this->price = $price;
+      $this->name = $name;
+      $type = "pickup";
     }
   }
 ?>
