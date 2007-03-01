@@ -92,6 +92,7 @@
     * DOM parser output
     */
     function UpdateRecursive($vals) {
+      $params = array(); 
       $this->global_index++;
       //Reached end of array
       if($this->global_index >= count($vals))
