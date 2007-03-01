@@ -43,7 +43,7 @@
     var $data;
     var $xml_parser;
 
-    function GoogleResponse($id, $key, $response, $server_type ="checkout", $currency = "GBP") {
+    function GoogleResponse($id, $key, $response, $server_type ="checkout", $currency = "USD") {
       $this->merchant_id = $id;
       $this->merchant_key = $key;
       $this->currency = $currency;

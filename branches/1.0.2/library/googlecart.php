@@ -53,7 +53,7 @@
 
     //The Constructor method which requires a merchant id, merchant key
     //and the operation type(sandbox or checkout)
-    function GoogleCart($id, $key, $server_type = "sandbox", $currency = "GBP") {
+    function GoogleCart($id, $key, $server_type = "sandbox", $currency = "USD") {
       $this->merchant_id = $id;
       $this->merchant_key = $key;
       $this->currency = $currency;
