@@ -30,7 +30,7 @@
      var $currency;
      var $schema_url = "http://checkout.google.com/schema/2";
 
-    function GoogleMerchantCalculations($currency = "GBP") {
+    function GoogleMerchantCalculations($currency = "USD") {
       $this->results_arr = array();
       $this->currency = $currency;
     }
