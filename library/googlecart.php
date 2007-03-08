@@ -117,7 +117,7 @@
 
     function AddDefaultTaxRules($rules) {
       $this->default_tax_table = true;
-      $this->default_tax_rule_arr[] = $rules;
+      $this->default_tax_rules_arr[] = $rules;
     }
 
     function AddAlternateTaxTables($tax) {
