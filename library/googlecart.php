@@ -150,7 +150,7 @@
             array('currency' => $this->currency));
         $xml_data->Element('quantity', $item->quantity);
         if($item->merchant_private_item_data != '')
-          $xml_data->XmlElement('merchant-private-item-data',
+          $xml_data->Element('merchant-private-item-data',
               $item->merchant_private_item_data);
 		if($item->merchant_item_id != '')
           $xml_data->Element('merchant-item-id', $item->merchant_item_id);
@@ -161,7 +161,7 @@
       $xml_data->Pop('items');
 
       if($this->merchant_private_data != '')
-        $xml_data->XmlElement('merchant-private-data',
+        $xml_data->Element('merchant-private-data',
             $this->merchant_private_data);
       $xml_data->Pop('shopping-cart');
 
