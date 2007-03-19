@@ -49,7 +49,7 @@
       $this->currency = $currency;
 
       if($server_type == "sandbox") 
-        $this->server_url = "https://sandbox.google.com/checkout";
+        $this->server_url = "https://sandbox.google.com/checkout/";
       else
         $this->server_url = "https://checkout.google.com/";  
 
