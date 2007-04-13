@@ -44,6 +44,8 @@
     var $merchant_calculations_url = "";
     var $accept_merchant_coupons = "";
     var $accept_gift_certificates = "";
+    var $rounding_mode;
+    var $rounding_rule;
 
     var $item_arr;
     var $shipping_arr;
@@ -124,6 +126,29 @@
       $this->alternate_tax_tables_arr[] = $tax;
     }
 
+    function AddRoundingPolicy($mode, $rule) {
+      switch ($mode) {
+        case "UP":
+        case "DOWN":
+        case "CEILING":
+        case "HALF_UP":
+        case "HALF_DOWN":
+        case "HALF_EVEN":
+            $this->rounding_mode = $mode;
+            break;
+        default:
+            break;
+      }
+      switch ($rule) {
+        case "PER_LINE":
+        case "TOTAL":
+            $this->rounding_rule = $rule;
+            break;
+        default:
+            break;
+      }
+    }
+
     function GetXML() {
       require_once('xml-processing/xmlbuilder.php');
 
@@ -150,9 +175,9 @@
             array('currency' => $this->currency));
         $xml_data->Element('quantity', $item->quantity);
         if($item->merchant_private_item_data != '')
-          $xml_data->XmlElement('merchant-private-item-data',
+          $xml_data->Element('merchant-private-item-data',
               $item->merchant_private_item_data);
-		if($item->merchant_item_id != '')
+        if($item->merchant_item_id != '')
           $xml_data->Element('merchant-item-id', $item->merchant_item_id);
         if($item->tax_table_selector != '')
           $xml_data->Element('tax-table-selector', $item->tax_table_selector);
@@ -161,7 +186,7 @@
       $xml_data->Pop('items');
 
       if($this->merchant_private_data != '')
-        $xml_data->XmlElement('merchant-private-data',
+        $xml_data->Element('merchant-private-data',
             $this->merchant_private_data);
       $xml_data->Pop('shopping-cart');
 
@@ -185,52 +210,160 @@
           $xml_data->Element('price', $ship->price,
               array('currency' => $this->currency));
 
-          //Check if shipping restrictions have been specified
-          if( $ship->allowed_restrictions  || 
-              $ship->excluded_restrictions) {
+          $shipping_restrictions = $ship->shipping_restrictions;
+          if (isset($shipping_restrictions)) {
             $xml_data->Push('shipping-restrictions');
 
+            if ($shipping_restrictions->allow_us_po_box === true) {
+              $xml_data->Element('allow-us-po-box', "true");
+            } else {
+              $xml_data->Element('allow-us-po-box', "false");
+            }
+
             //Check if allowed restrictions specified
-            if($ship->allowed_restrictions) {
+            if($shipping_restrictions->allowed_restrictions) {
               $xml_data->Push('allowed-areas');
-              if($ship->allowed_country_area != "")
+              if($shipping_restrictions->allowed_country_area != "")
                 $xml_data->Element('us-country-area','',
                     array('country-area' =>
-                    $ship->allowed_country_area));
-              foreach($ship->allowed_state_areas_arr as $current) {
+                    $shipping_restrictions->allowed_country_area));
+              foreach($shipping_restrictions->allowed_state_areas_arr as $current) {
                 $xml_data->Push('us-state-area');
                 $xml_data->Element('state', $current);
                 $xml_data->Pop('us-state-area');
               }
-              foreach($ship->allowed_zip_patterns_arr as $current) {
+              foreach($shipping_restrictions->allowed_zip_patterns_arr as $current) {
                 $xml_data->Push('us-zip-area');
                 $xml_data->Element('zip-pattern', $current);
                 $xml_data->Pop('us-zip-area');
+              }
+              if($shipping_restrictions->allowed_world_area === true) {
+                $xml_data->EmptyElement('world-area');
+              }
+              for($i=0; $i<count($shipping_restrictions->allowed_country_codes_arr); $i++) {
+                $xml_data->Push('postal-area');
+                $country_code = $shipping_restrictions->allowed_country_codes_arr[$i];
+                $postal_pattern = $shipping_restrictions->allowed_postal_patterns_arr[$i];
+                $xml_data->Element('country-code', $country_code);
+                if ($postal_pattern != "") {
+                  $xml_data->Element('postal-code-pattern', $postal_pattern);
+                }
+                $xml_data->Pop('postal-area');
               }
               $xml_data->Pop('allowed-areas');
             }
 
-            if($ship->excluded_restrictions) { 
-              $xml_data->Push('allowed-areas');
-              $xml_data->Pop('allowed-areas');
+            if($shipping_restrictions->excluded_restrictions) { 
+              if (!$shipping_restrictions->allowed_restrictions) {
+                $xml_data->EmptyElement('allowed-areas');
+              }
               $xml_data->Push('excluded-areas');
-              if($ship->excluded_country_area != "")
+              if($shipping_restrictions->excluded_country_area != "")
                 $xml_data->Element('us-country-area','',
                     array('country-area' => 
-                    $ship->excluded_country_area));
-              foreach($ship->excluded_state_areas_arr as $current) {
+                    $shipping_restrictions->excluded_country_area));
+              foreach($shipping_restrictions->excluded_state_areas_arr as $current) {
                 $xml_data->Push('us-state-area');
                 $xml_data->Element('state', $current);
                 $xml_data->Pop('us-state-area');
               }
-              foreach($ship->excluded_zip_patterns_arr as $current) {
+              foreach($shipping_restrictions->excluded_zip_patterns_arr as $current) {
                 $xml_data->Push('us-zip-area');
                 $xml_data->Element('zip-pattern', $current);
                 $xml_data->Pop('us-zip-area');
+              }
+              for($i=0; $i<count($shipping_restrictions->excluded_country_codes_arr); $i++) {
+                $xml_data->Push('postal-area');
+                $country_code = $shipping_restrictions->excluded_country_codes_arr[$i];
+                $postal_pattern = $shipping_restrictions->excluded_postal_patterns_arr[$i];
+                $xml_data->Element('country-code', $country_code);
+                if ($postal_pattern != "") {
+                  $xml_data->Element('postal-code-pattern', $postal_pattern);
+                }
+                $xml_data->Pop('postal-area');
               }
               $xml_data->Pop('excluded-areas');
             }
             $xml_data->Pop('shipping-restrictions');
+          }
+
+          if ($ship->type == "merchant-calculated-shipping") {
+            $address_filters = $ship->address_filters;
+            if (isset($address_filters)) {
+              $xml_data->Push('address-filters');
+
+              if ($address_filters->allow_us_po_box === true) {
+                $xml_data->Element('allow-us-po-box', "true");
+              } else {
+                $xml_data->Element('allow-us-po-box', "false");
+              }
+
+              //Check if allowed restrictions specified
+              if($address_filters->allowed_restrictions) {
+                $xml_data->Push('allowed-areas');
+                if($address_filters->allowed_country_area != "")
+                  $xml_data->Element('us-country-area','',
+                      array('country-area' =>
+                      $address_filters->allowed_country_area));
+                foreach($address_filters->allowed_state_areas_arr as $current) {
+                  $xml_data->Push('us-state-area');
+                  $xml_data->Element('state', $current);
+                  $xml_data->Pop('us-state-area');
+                }
+                foreach($address_filters->allowed_zip_patterns_arr as $current) {
+                  $xml_data->Push('us-zip-area');
+                  $xml_data->Element('zip-pattern', $current);
+                  $xml_data->Pop('us-zip-area');
+                }
+                if($address_filters->allowed_world_area === true) {
+                  $xml_data->EmptyElement('world-area');
+                }
+                for($i=0; $i<count($address_filters->allowed_country_codes_arr); $i++) {
+                  $xml_data->Push('postal-area');
+                  $country_code = $address_filters->allowed_country_codes_arr[$i];
+                  $postal_pattern = $address_filters->allowed_postal_patterns_arr[$i];
+                  $xml_data->Element('country-code', $country_code);
+                  if ($postal_pattern != "") {
+                    $xml_data->Element('postal-code-pattern', $postal_pattern);
+                  }
+                  $xml_data->Pop('postal-area');
+                }
+                $xml_data->Pop('allowed-areas');
+              }
+
+              if($address_filters->excluded_restrictions) { 
+                if (!$address_filters->allowed_restrictions) {
+                  $xml_data->EmptyElement('allowed-areas');
+                }
+                $xml_data->Push('excluded-areas');
+                if($address_filters->excluded_country_area != "")
+                  $xml_data->Element('us-country-area','',
+                      array('country-area' => 
+                      $address_filters->excluded_country_area));
+                foreach($address_filters->excluded_state_areas_arr as $current) {
+                  $xml_data->Push('us-state-area');
+                  $xml_data->Element('state', $current);
+                  $xml_data->Pop('us-state-area');
+                }
+                foreach($address_filters->excluded_zip_patterns_arr as $current) {
+                  $xml_data->Push('us-zip-area');
+                  $xml_data->Element('zip-pattern', $current);
+                  $xml_data->Pop('us-zip-area');
+                }
+                for($i=0; $i<count($address_filters->excluded_country_codes_arr); $i++) {
+                  $xml_data->Push('postal-area');
+                  $country_code = $address_filters->excluded_country_codes_arr[$i];
+                  $postal_pattern = $address_filters->excluded_postal_patterns_arr[$i];
+                  $xml_data->Element('country-code', $country_code);
+                  if ($postal_pattern != "") {
+                    $xml_data->Element('postal-code-pattern', $postal_pattern);
+                  }
+                  $xml_data->Pop('postal-area');
+                }
+                $xml_data->Pop('excluded-areas');
+              }
+              $xml_data->Pop('address-filters');
+            }
           }
           $xml_data->Pop($ship->type);
         }
@@ -306,6 +439,33 @@
               $xml_data->Pop('tax-area');
               $xml_data->Pop('default-tax-rule');
             }
+
+            for($i=0; $i<count($curr_rule->country_codes_arr); $i++) {
+              $xml_data->Push('default-tax-rule');
+              $xml_data->Element('shipping-taxed', $curr_rule->shipping_taxed);
+              $xml_data->Element('rate', $curr_rule->tax_rate);
+              $xml_data->Push('tax-area');
+              $xml_data->Push('postal-area');
+              $country_code = $curr_rule->country_codes_arr[$i];
+              $postal_pattern = $curr_rule->postal_patterns_arr[$i];
+              $xml_data->Element('country-code', $country_code);
+              if ($postal_pattern != "") {
+                $xml_data->Element('postal-code-pattern', $postal_pattern);
+              }
+              $xml_data->Pop('postal-area');
+              $xml_data->Pop('tax-area');
+              $xml_data->Pop('default-tax-rule');
+            }
+
+            if ($curr_rule->world_area === true) {
+              $xml_data->Push('default-tax-rule');
+              $xml_data->Element('shipping-taxed', $curr_rule->shipping_taxed);
+              $xml_data->Element('rate', $curr_rule->tax_rate);
+              $xml_data->Push('tax-area');
+              $xml_data->EmptyElement('world-area');
+              $xml_data->Pop('tax-area');
+              $xml_data->Pop('default-tax-rule');
+            }
           }
           $xml_data->Pop('tax-rules');
           $xml_data->Pop('default-tax-table');
@@ -348,6 +508,31 @@
                 $xml_data->Pop('tax-area');
                 $xml_data->Pop('alternate-tax-rule');
               }
+
+              for($i=0; $i<count($curr_rule->country_codes_arr); $i++) {
+                $xml_data->Push('alternate-tax-rule');
+                $xml_data->Element('rate', $curr_rule->tax_rate);
+                $xml_data->Push('tax-area');
+                $xml_data->Push('postal-area');
+                $country_code = $curr_rule->country_codes_arr[$i];
+                $postal_pattern = $curr_rule->postal_patterns_arr[$i];
+                $xml_data->Element('country-code', $country_code);
+                if ($postal_pattern != "") {
+                  $xml_data->Element('postal-code-pattern', $postal_pattern);
+                }
+                $xml_data->Pop('postal-area');
+                $xml_data->Pop('tax-area');
+                $xml_data->Pop('alternate-tax-rule');
+              }
+
+              if ($curr_rule->world_area === true) {
+                $xml_data->Push('alternate-tax-rule');
+                $xml_data->Element('rate', $curr_rule->tax_rate);
+                $xml_data->Push('tax-area');
+                $xml_data->EmptyElement('world-area');
+                $xml_data->Pop('tax-area');
+                $xml_data->Pop('alternate-tax-rule');
+              }
             }
             $xml_data->Pop('alternate-tax-rules');
             $xml_data->Pop('alternate-tax-table');
@@ -355,6 +540,13 @@
           $xml_data->Pop('alternate-tax-tables');
         }
         $xml_data->Pop('tax-tables');
+      }
+
+      if (($this->rounding_mode != "") && ($this->rounding_rule != "")) {
+        $xml_data->Push('rounding-policy');
+        $xml_data->Element('mode', $this->rounding_mode);
+        $xml_data->Element('rule', $this->rounding_rule);
+        $xml_data->Pop('rounding-policy');
       }
 
       $xml_data->Pop('merchant-checkout-flow-support');
