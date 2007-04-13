@@ -21,16 +21,31 @@
     var $tax_rate;
     var $shipping_taxed = false;
 
+    var $world_area = false;
+    var $country_codes_arr;
+    var $postal_patterns_arr;
     var $state_areas_arr;
     var $zip_patterns_arr;
     var $country_area;
 
-    function GoogleDefaultTaxRule($tax_rate, $shipping_taxed = false) {
+    function GoogleDefaultTaxRule($tax_rate, $shipping_taxed = "false") {
       $this->tax_rate = $tax_rate;
 	  $this->shipping_taxed= $shipping_taxed;
 
+      $this->world_area = false;
+      $this->country_codes_arr = array();
+      $this->postal_patterns_arr = array();
       $this->state_areas_arr = array();
       $this->zip_patterns_arr = array();
+    }
+
+    function SetWorldArea($world_area = true) {
+      $this->world_area = $world_area;
+    }
+
+    function AddPostalArea($country_code, $postal_pattern = "") {
+      $this->country_codes_arr[] = $country_code;
+      $this->postal_patterns_arr[]= $postal_pattern;
     }
 
     function SetStateAreas($areas) {
@@ -61,6 +76,9 @@
 
     var $tax_rate;
 
+    var $world_area = false;
+    var $country_codes_arr;
+    var $postal_patterns_arr;
     var $state_areas_arr;
     var $zip_patterns_arr;
     var $country_area;
@@ -72,6 +90,15 @@
       $this->postal_patterns_arr = array();
       $this->state_areas_arr = array();
       $this->zip_patterns_arr = array();
+    }
+
+    function SetWorldArea($world_area = true) {
+      $this->world_area = $world_area;
+    }
+
+    function AddPostalArea($country_code, $postal_pattern = "") {
+      $this->country_codes_arr[] = $country_code;
+      $this->postal_patterns_arr[]= $postal_pattern;
     }
 
     function SetStateAreas($areas) {

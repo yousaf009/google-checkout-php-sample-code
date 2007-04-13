@@ -49,23 +49,53 @@
     $cart->AddItem($item_1);
     $cart->AddItem($item_2);
 
-    // Add shipping options
+    // Add US shipping options
     $ship_1 = new GoogleFlatRateShipping("UPS Ground", 5.0);
-	$ship_1->SetAllowedCountryArea("CONTINENTAL_48");
+	$restriction_1 = new GoogleShippingFilters();
+	$restriction_1->SetAllowedCountryArea("CONTINENTAL_48");
+	$ship_1->AddShippingRestrictions($restriction_1);
 
     $ship_2 = new GoogleFlatRateShipping("UPS 2nd Day", 10.0);
-	$ship_2->SetAllowedStateAreas(array("CA", "AZ", "CO", "WA", "OR"));
+	$restriction_2 = new GoogleShippingFilters();
+	$restriction_2->SetAllowedStateAreas(array("CA", "AZ", "CO", "WA", "OR"));
+	$ship_2->AddShippingRestrictions($restriction_2);
+
+    // Add international shipping options
+    $ship_3 = new GoogleFlatRateShipping("Canada 3 Business Days", 5.0);
+    $restriction_3 = new GoogleShippingFilters();
+    $restriction_3->AddAllowedPostalArea("CA");
+    $restriction_3->SetAllowUsPoBox(false);
+    $ship_3->AddShippingRestrictions($restriction_3);
+
+    $ship_4 = new GoogleFlatRateShipping("Europe 3 Business Days", 10.0);
+    $restriction_4 = new GoogleShippingFilters();
+    $restriction_4->AddAllowedPostalArea("GB", "SW*");
+    $ship_4->AddShippingRestrictions($restriction_4);
 
     $cart->AddShipping($ship_1);
     $cart->AddShipping($ship_2);
+    $cart->AddShipping($ship_3);
+    $cart->AddShipping($ship_4);
 
-    // Add tax rules
-    $tax_rule = new GoogleDefaultTaxRule(0.0825);
-    $tax_rule->SetStateAreas(array("CA", "NY"));
-    $cart->AddDefaultTaxRules($tax_rule);
+    // Add US tax rules
+    $tax_rule_1 = new GoogleDefaultTaxRule(0.0825);
+    $tax_rule_1->SetStateAreas(array("CA", "NY"));
+    $cart->AddDefaultTaxRules($tax_rule_1);
+
+    // Add International tax rules
+    $tax_rule_2 = new GoogleDefaultTaxRule(0.15);
+    $tax_rule_2->AddPostalArea("GB");
+    $tax_rule_2->AddPostalArea("FR");
+    $tax_rule_2->AddPostalArea("DE");
+    $cart->AddDefaultTaxRules($tax_rule_2);
+
+    // Define rounding policy
+    $cart->AddRoundingPolicy("HALF_UP", "PER_LINE");
 
     // Display XML data
+    // echo "<pre>";
     // echo htmlentities($cart->GetXML());
+    // echo "</pre>";
 
     // Display Google Checkout button
     echo $cart->CheckoutButtonCode("LARGE");
@@ -87,26 +117,30 @@
     $item_2 = new GoogleItem("MegaSound 2GB MP3 Player", 
         "Portable MP3 player - stores 500 songs", 1, 175.49);
     $item_2->SetMerchantPrivateItemData("<color>blue</color><weight>3.2</weight>");
-	$item_2->SetMerchantItemId("Item#012345");
+    $item_2->SetMerchantItemId("Item#012345");
 
     $cart->AddItem($item_1);
     $cart->AddItem($item_2);
 
     // Add shipping options
-    $ship_1 = new GoogleFlatRateShipping("UPS 3rd Day Air", 15);
-	$ship_1->SetAllowedCountryArea("FULL_50_STATES");
+    $ship_1 = new GoogleFlatRateShipping("Ground", 15);
+    $restriction_1 = new GoogleShippingFilters();
+    $restriction_1->SetAllowedWorldArea(true);
+    $ship_1->AddShippingRestrictions($restriction_1);
 
-    $ship_2 = new GooglePickup("Pick Up", 0);
+    $ship_2 = new GooglePickup("Pick Up", 5);
 
     $cart->AddShipping($ship_1);
     $cart->AddShipping($ship_2);
 
     // Add default tax rules
-    $tax_rule_1 = new GoogleDefaultTaxRule(0.0825);
-    $tax_rule_1->SetZipPatterns(array("9404*", "10024"));
+    $tax_rule_1 = new GoogleDefaultTaxRule(0.17);
+    $tax_rule_1->AddPostalArea("GB", "SW*");
+    $tax_rule_1->AddPostalArea("FR");
+    $tax_rule_1->AddPostalArea("DE");
 
-    $tax_rule_2 = new GoogleDefaultTaxRule(0.0725);
-    $tax_rule_1->SetZipPatterns(array("9136*"));
+    $tax_rule_2 = new GoogleDefaultTaxRule(0.10);
+    $tax_rule_2->SetWorldArea(true);
 
     $cart->AddDefaultTaxRules($tax_rule_1);
     $cart->AddDefaultTaxRules($tax_rule_2);
@@ -115,10 +149,12 @@
     $tax_table = new GoogleAlternateTaxTable("food");
 
     $tax_rule_1 = new GoogleAlternateTaxRule(0.05);
-    $tax_rule_1->SetStateAreas(array("CA", "NY"));
+    $tax_rule_1->AddPostalArea("GB");
+    $tax_rule_1->AddPostalArea("FR");
+    $tax_rule_1->AddPostalArea("DE");
 
     $tax_rule_2 = new GoogleAlternateTaxRule(0.03);
-    $tax_rule_2->SetCountryArea("ALL");
+    $tax_rule_2->SetWorldArea(true);
 
     $tax_table->AddAlternateTaxRules($tax_rule_1);
     $tax_table->AddAlternateTaxRules($tax_rule_2);
@@ -137,8 +173,13 @@
     // Request buyer's phone number
     $cart->SetRequestBuyerPhone(true);
 
+    // Define rounding policy
+    $cart->AddRoundingPolicy("CEILING", "TOTAL");
+
     // Display XML data
+    // echo "<pre>";
     // echo htmlentities($cart->GetXML());
+    // echo "</pre>";
 
     // Display a medium size button
     echo $cart->CheckoutButtonCode("MEDIUM");
@@ -165,18 +206,35 @@
         true, // accept-merchant-coupons
         true); // accept-merchant-gift-certificates
 
+    // Add merchant-calculated-shipping option
     $ship = new GoogleMerchantCalculatedShipping("2nd Day Air", // Shippping method
                                                  10.00); // Default, fallback price
-    $ship->SetAllowedCountryArea("ALL");
+
+    $restriction = new GoogleShippingFilters();
+    $restriction->AddAllowedPostalArea("GB");
+    $restriction->AddAllowedPostalArea("US");
+    $restriction->SetAllowUsPoBox(false);
+    $ship->AddShippingRestrictions($restriction);
+
+    $address_filter = new GoogleShippingFilters();
+    $address_filter->AddAllowedPostalArea("GB");
+    $address_filter->AddAllowedPostalArea("US");
+    $address_filter->SetAllowUsPoBox(false);
+    $ship->AddAddressFilters($address_filter);
+    
     $cart->AddShipping($ship);
 
     // Set default tax options
-    $tax_rule = new GoogleDefaultTaxRule(0.0825);
-    $tax_rule->SetStateAreas(array("CA"));
+    $tax_rule = new GoogleDefaultTaxRule(0.15);
+    $tax_rule->SetWorldArea(true);
     $cart->AddDefaultTaxRules($tax_rule);
 
+    $cart->AddRoundingPolicy("UP", "TOTAL");
+
     // Display XML data
+    // echo "<pre>";
     // echo htmlentities($cart->GetXML());
+    // echo "</pre>";
 
     // Display a disabled, small button
     echo $cart->CheckoutButtonCode("SMALL", false);

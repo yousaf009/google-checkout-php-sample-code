@@ -92,14 +92,16 @@
     * DOM parser output
     */
     function UpdateRecursive($vals) {
-      $params = array(); 
+      $params = array();
       $this->global_index++;
       //Reached end of array
       if($this->global_index >= count($vals))
         return;
 
       $tag = strtolower($vals[$this->global_index]['tag']);
-      $value = trim($vals[$this->global_index]['value']);
+      if (isset(trim($vals[$this->global_index]['value']))) {
+        $value = trim($vals[$this->global_index]['value']);
+      }
       $type = $vals[$this->global_index]['type'];
 
       //Add attributes
