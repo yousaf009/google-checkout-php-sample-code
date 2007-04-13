@@ -62,15 +62,6 @@
       $this->xml .= '>'.htmlentities($content).'</'.$element.'>'."\n";
     }
 
-    function XmlElement($element, $content, $attributes = array()) {
-      $this->_indent();
-      $this->xml .= '<'.$element;
-      foreach ($attributes as $key => $value) {
-        $this->xml .= ' '.$key.'="'.htmlentities($value).'"';
-      }
-      $this->xml .= '>'.$content.'</'.$element.'>'."\n";
-    }
-
     function EmptyElement($element, $attributes = array()) {
       $this->_indent();
       $this->xml .= '<'.$element;
