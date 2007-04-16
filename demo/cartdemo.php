@@ -64,7 +64,7 @@
     $ship_3 = new GoogleFlatRateShipping("Canada 3 Business Days", 5.0);
     $restriction_3 = new GoogleShippingFilters();
     $restriction_3->AddAllowedPostalArea("CA");
-    $restriction_3->SetAllowUsPoBox(false);
+    $restriction_3->SetAllowUsPoBox("false");
     $ship_3->AddShippingRestrictions($restriction_3);
 
     $ship_4 = new GoogleFlatRateShipping("Europe 3 Business Days", 10.0);
@@ -125,7 +125,7 @@
     // Add shipping options
     $ship_1 = new GoogleFlatRateShipping("Ground", 15);
     $restriction_1 = new GoogleShippingFilters();
-    $restriction_1->SetAllowedWorldArea(true);
+    $restriction_1->SetAllowedWorldArea("true");
     $ship_1->AddShippingRestrictions($restriction_1);
 
     $ship_2 = new GooglePickup("Pick Up", 5);
@@ -140,7 +140,7 @@
     $tax_rule_1->AddPostalArea("DE");
 
     $tax_rule_2 = new GoogleDefaultTaxRule(0.10);
-    $tax_rule_2->SetWorldArea(true);
+    $tax_rule_2->SetWorldArea("true");
 
     $cart->AddDefaultTaxRules($tax_rule_1);
     $cart->AddDefaultTaxRules($tax_rule_2);
@@ -154,7 +154,7 @@
     $tax_rule_1->AddPostalArea("DE");
 
     $tax_rule_2 = new GoogleAlternateTaxRule(0.03);
-    $tax_rule_2->SetWorldArea(true);
+    $tax_rule_2->SetWorldArea("true");
 
     $tax_table->AddAlternateTaxRules($tax_rule_1);
     $tax_table->AddAlternateTaxRules($tax_rule_2);
@@ -171,7 +171,7 @@
     $cart->SetContinueShoppingUrl("http://www.example.com/continue");
 
     // Request buyer's phone number
-    $cart->SetRequestBuyerPhone(true);
+    $cart->SetRequestBuyerPhone("true");
 
     // Define rounding policy
     $cart->AddRoundingPolicy("CEILING", "TOTAL");
@@ -202,9 +202,9 @@
     // Add merchant calculations options
     $cart->SetMerchantCalculations(
         "https://www.example.com/merchant-calculations", // merchant-calculations-url
-        true, // merchant-calculated tax
-        true, // accept-merchant-coupons
-        true); // accept-merchant-gift-certificates
+        "true", // merchant-calculated tax
+        "true", // accept-merchant-coupons
+        "true"); // accept-merchant-gift-certificates
 
     // Add merchant-calculated-shipping option
     $ship = new GoogleMerchantCalculatedShipping("2nd Day Air", // Shippping method
@@ -213,20 +213,20 @@
     $restriction = new GoogleShippingFilters();
     $restriction->AddAllowedPostalArea("GB");
     $restriction->AddAllowedPostalArea("US");
-    $restriction->SetAllowUsPoBox(false);
+    $restriction->SetAllowUsPoBox("false");
     $ship->AddShippingRestrictions($restriction);
 
     $address_filter = new GoogleShippingFilters();
     $address_filter->AddAllowedPostalArea("GB");
     $address_filter->AddAllowedPostalArea("US");
-    $address_filter->SetAllowUsPoBox(false);
+    $address_filter->SetAllowUsPoBox("false");
     $ship->AddAddressFilters($address_filter);
     
     $cart->AddShipping($ship);
 
     // Set default tax options
     $tax_rule = new GoogleDefaultTaxRule(0.15);
-    $tax_rule->SetWorldArea(true);
+    $tax_rule->SetWorldArea("true");
     $cart->AddDefaultTaxRules($tax_rule);
 
     $cart->AddRoundingPolicy("UP", "TOTAL");
