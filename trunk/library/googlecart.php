@@ -98,7 +98,7 @@
     }
 
     function SetRequestBuyerPhone($req) {
-      $this->_SetBooleanValue('request_buyer_phone', $req, "");
+      $this->_SetBooleanValue('request_buyer_phone', $req, "false");
     }
 
     function SetMerchantCalculations($url, $tax_option = "false",
@@ -639,7 +639,7 @@
     //Method used internally to set true/false cart variables
     function _SetBooleanValue($string, $value, $default) {
       $value = strtolower($value);
-      if($value== "true" || $value == "false")
+      if($value == "true" || $value == "false")
         eval('$this->'.$string.'="'.$value.'";');
       else
         eval('$this->'.$string.'="'.$default.'";');
