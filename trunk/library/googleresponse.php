@@ -155,7 +155,7 @@
                   <send-buyer-message xmlns=\"". $this->schema_url . 
                   "\" google-order-number=\"". $google_order . "\">
                   <message>" . $message . "</message>
-                  <send-mail>" . $send_mail . "</send-mail>
+                  <send-email>" . $send_mail . "</send-email>
                   </send-buyer-message>";     
       return $this->SendReq($this->request_url, $this->GetAuthenticationHeaders(),
           $postargs, $message_log);
