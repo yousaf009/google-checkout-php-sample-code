@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2006 Google Inc.
+ * Copyright (C) 2007 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,53 +37,39 @@
   require_once('library/googlemerchantcalculations.php');
   require_once('library/googleresult.php');
 
+  define('RESPONSE_HANDLER_ERROR_LOG_FILE', 'googleerror.log');
   define('RESPONSE_HANDLER_LOG_FILE', 'googlemessage.log');
 
+  $merchant_id = "";  // Your Merchant ID
+  $merchant_key = "";  // Your Merchant Key
+  $currency = 'USD';
+  $Gresponse = new GoogleResponse();
+
   //Setup the log file
-  if (!$message_log = fopen(RESPONSE_HANDLER_LOG_FILE, "a")) {
-    error_func("Cannot open " . RESPONSE_HANDLER_LOG_FILE . " file.\n", 0);
-    exit(1);
-  }
+  $Gresponse->SetLogFiles(RESPONSE_HANDLER_ERROR_LOG_FILE, 
+                                        RESPONSE_HANDLER_LOG_FILE, L_ALL);
 
   // Retrieve the XML sent in the HTTP POST request to the ResponseHandler
-  $xml_response = $HTTP_RAW_POST_DATA;
+  $xml_response = isset($HTTP_RAW_POST_DATA)?
+                    $HTTP_RAW_POST_DATA:file_get_contents("php://input");
   if (get_magic_quotes_gpc()) {
     $xml_response = stripslashes($xml_response);
   }
-  $headers = getallheaders();
-  fwrite($message_log, sprintf("\n\r%s:- %s\n",date("D M j G:i:s T Y"),
-      $xml_response));
+  list($root, $data) = $Gresponse->GetParsedXML($xml_response);
+  $Gresponse->SetMerchantAuthentication($merchant_id, $merchant_key);
 
-  // Create new response object
-  $merchant_id = "";  // Your Merchant ID
-  $merchant_key = "";  // Your Merchant Key
-  $server_type = "sandbox";
-  $currency = "USD";
-
-  $response = new GoogleResponse($merchant_id, $merchant_key,
-      $xml_response, $server_type, $currency);
-  $root = $response->root;
-  $data = $response->data;
-  fwrite($message_log, sprintf("\n\r%s:- %s\n",date("D M j G:i:s T Y"),
-      $response->root));
-
-  //Use the following two lines to log the associative array storing the XML data
-  //$result = print_r($data,true);
-  //fwrite($message_log, sprintf("\n\r%s:- %s\n",date("D M j G:i:s T Y"),$result));
-
-  //Check status and take appropriate action
-  $status = $response->HttpAuthentication($headers);
+  $Gresponse->HttpAuthentication();
 
   /* Commands to send the various order processing APIs
-   * Send charge order : $response->SendChargeOrder($data[$root]
-   *    ['google-order-number']['VALUE'], <amount>, $message_log);
-   * Send proces order : $response->SendProcessOrder($data[$root]
-   *    ['google-order-number']['VALUE'], $message_log);
-   * Send deliver order: $response->SendDeliverOrder($data[$root]
+   * Send charge order : $Gresponse->SendChargeOrder($data[$root]
+   *    ['google-order-number']['VALUE'], <amount>);
+   * Send proces order : $Gresponse->SendProcessOrder($data[$root]
+   *    ['google-order-number']['VALUE']);
+   * Send deliver order: $Gresponse->SendDeliverOrder($data[$root]
    *    ['google-order-number']['VALUE'], <carrier>, <tracking-number>,
-   *    <send_mail>, $message_log);
-   * Send archive order: $response->SendArchiveOrder($data[$root]
-   *    ['google-order-number']['VALUE'], $message_log);
+   *    <send_mail>);
+   * Send archive order: $Gresponse->SendArchiveOrder($data[$root]
+   *    ['google-order-number']['VALUE']);
    *
    */
 
@@ -120,7 +106,7 @@
           foreach($shipping as $curr_ship) {
             $name = $curr_ship['name'];
             //Compute the price for this shipping method and address id
-            $price = 10; // Modify this to get the actual price
+            $price = 12; // Modify this to get the actual price
             $shippable = "true"; // Modify this as required
             $merchant_result = new GoogleResult($curr_id);
             $merchant_result->SetShippingDetails($name, $price, $shippable);
@@ -131,14 +117,17 @@
               $merchant_result->SetTaxDetails($amount);
             }
 
-            $codes = get_arr_result($data[$root]['calculate']['merchant-code-strings']
-                ['merchant-code-string']);
-            foreach($codes as $curr_code) {
-              //Update this data as required to set whether the coupon is valid, the code and the amount
-              $coupons = new GoogleCoupons("true", $curr_code['code'], 5, "test2");
-              $merchant_result->AddCoupons($coupons);
-            }
-            $merchant_calc->AddResult($merchant_result);
+            if(isset($data[$root]['calculate']['merchant-code-strings']
+                ['merchant-code-string'])) {
+              $codes = get_arr_result($data[$root]['calculate']['merchant-code-strings']
+                  ['merchant-code-string']);
+              foreach($codes as $curr_code) {
+                //Update this data as required to set whether the coupon is valid, the code and the amount
+                $coupons = new GoogleCoupons("true", $curr_code['code'], 5, "test2");
+                $merchant_result->AddCoupons($coupons);
+              }
+             }
+             $merchant_calc->AddResult($merchant_result);
           }
         } else {
           $merchant_result = new GoogleResult($curr_id);
@@ -157,17 +146,15 @@
           $merchant_calc->AddResult($merchant_result);
         }
       }
-      fwrite($message_log, sprintf("\n\r%s:- %s\n",date("D M j G:i:s T Y"),
-          $merchant_calc->GetXML()));
-      $response->ProcessMerchantCalculations($merchant_calc);
+      $Gresponse->ProcessMerchantCalculations($merchant_calc);
       break;
     }
     case "new-order-notification": {
-      $response->SendAck();
+      $Gresponse->SendAck();
       break;
     }
     case "order-state-change-notification": {
-      $response->SendAck();
+      $Gresponse->SendAck();
       $new_financial_state = $data[$root]['new-financial-order-state']['VALUE'];
       $new_fulfillment_order = $data[$root]['new-fulfillment-order-state']['VALUE'];
 
@@ -176,10 +163,8 @@
           break;
         }
         case 'CHARGEABLE': {
-          //$response->SendProcessOrder($data[$root]['google-order-number']['VALUE'], 
-          //    $message_log);
-          //$response->SendChargeOrder($data[$root]['google-order-number']['VALUE'], 
-          //    '', $message_log);
+          //$Gresponse->SendProcessOrder($data[$root]['google-order-number']['VALUE']);
+          //$Gresponse->SendChargeOrder($data[$root]['google-order-number']['VALUE'],'');
           break;
         }
         case 'CHARGING': {
@@ -195,8 +180,8 @@
           break;
         }
         case 'CANCELLED_BY_GOOGLE': {
-          //$response->SendBuyerMessage($data[$root]['google-order-number']['VALUE'],
-          //    "Sorry, your order is cancelled by Google", true, $message_log);
+          //$Gresponse->SendBuyerMessage($data[$root]['google-order-number']['VALUE'],
+          //    "Sorry, your order is cancelled by Google", true);
           break;
         }
         default:
@@ -222,26 +207,26 @@
       break;
     }
     case "charge-amount-notification": {
-      $response->SendAck();
-      //$response->SendDeliverOrder($data[$root]['google-order-number']['VALUE'], 
-      //    <carrier>, <tracking-number>, <send-email>, $message_log);
-      //$response->SendArchiveOrder($data[$root]['google-order-number']['VALUE'], 
-      //    $message_log);
+      $Gresponse->SendAck();
+      //$Gresponse->SendDeliverOrder($data[$root]['google-order-number']['VALUE'], 
+      //    <carrier>, <tracking-number>, <send-email>);
+      //$Gresponse->SendArchiveOrder($data[$root]['google-order-number']['VALUE'] );
       break;
     }
     case "chargeback-amount-notification": {
-      $response->SendAck();
+      $Gresponse->SendAck();
       break;
     }
     case "refund-amount-notification": {
-      $response->SendAck();
+      $Gresponse->SendAck();
       break;
     }
     case "risk-information-notification": {
-      $response->SendAck();
+      $Gresponse->SendAck();
       break;
     }
     default:
+      $Gresponse->SendBadRequestStatus("Invalid or not supported Message");
       break;
   }
   /* In case the XML API contains multiple open tags

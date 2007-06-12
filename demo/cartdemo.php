@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2006 Google Inc.
+ * Copyright (C) 2007 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,9 @@
   require_once('library/googletax.php');
 
   // Invoke any of the provided use cases
-  UseCase1();
-  // UseCase2();
-  // UseCase3();
+//  UseCase1();
+//   UseCase2();
+   UseCase3();
 
   function UseCase1() {
     // Create a new shopping cart object
@@ -57,7 +57,7 @@
 
     $ship_2 = new GoogleFlatRateShipping("UPS 2nd Day", 10.0);
 	$restriction_2 = new GoogleShippingFilters();
-	$restriction_2->SetAllowedStateAreas(array("CA", "AZ", "CO", "WA", "OR"));
+	$restriction_2->SetAllowedStateAreas(array('fl', "CA", "AZ", "CO", "WA", "OR"));
 	$ship_2->AddShippingRestrictions($restriction_2);
 
     // Add international shipping options
@@ -116,7 +116,9 @@
 
     $item_2 = new GoogleItem("MegaSound 2GB MP3 Player", 
         "Portable MP3 player - stores 500 songs", 1, 175.49);
-    $item_2->SetMerchantPrivateItemData("<color>blue</color><weight>3.2</weight>");
+    $item_2->SetMerchantPrivateItemData(
+                      new MerchantPrivateItemData(array("color" => "blue",
+                                                        "weight" => "3.2")));
     $item_2->SetMerchantItemId("Item#012345");
 
     $cart->AddItem($item_1);
@@ -162,7 +164,8 @@
     $cart->AddAlternateTaxTables($tax_table);
 
     // Add <merchant-private-data>
-    $cart->SetMerchantPrivateData("<cart-id>ABC123</cart-id>");
+    $cart->SetMerchantPrivateData(
+              new MerchantPrivateData(array("cart-id" => "ABC123")));
 
     // Specify <edit-cart-url>
     $cart->SetEditCartUrl("http://www.example.com/edit");
@@ -201,8 +204,8 @@
 
     // Add merchant calculations options
     $cart->SetMerchantCalculations(
-        "https://www.example.com/merchant-calculations", // merchant-calculations-url
-        "true", // merchant-calculated tax
+        "http://200.69.205.154/~brovagnati/tools/unitTest/demo/responsehandlerdemo.php", // merchant-calculations-url
+        "false", // merchant-calculated tax
         "true", // accept-merchant-coupons
         "true"); // accept-merchant-gift-certificates
 
@@ -237,7 +240,7 @@
     // echo "</pre>";
 
     // Display a disabled, small button
-    echo $cart->CheckoutButtonCode("SMALL", false);
+    echo $cart->CheckoutButtonCode("SMALL", true);
   }
 
 ?>

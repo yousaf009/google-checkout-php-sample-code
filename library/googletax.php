@@ -16,10 +16,12 @@
  * limitations under the License.
  */
 
-  class GoogleDefaultTaxRule {
+/*
+ * GoogleTaxRule
+ */
+  class GoogleTaxRule {
 
     var $tax_rate;
-    var $shipping_taxed = false;
 
     var $world_area = false;
     var $country_codes_arr;
@@ -28,15 +30,7 @@
     var $zip_patterns_arr;
     var $country_area;
 
-    function GoogleDefaultTaxRule($tax_rate, $shipping_taxed = "false") {
-      $this->tax_rate = $tax_rate;
-	  $this->shipping_taxed= $shipping_taxed;
-
-      $this->world_area = false;
-      $this->country_codes_arr = array();
-      $this->postal_patterns_arr = array();
-      $this->state_areas_arr = array();
-      $this->zip_patterns_arr = array();
+    function GoogleTaxRule() {
     }
 
     function SetWorldArea($world_area = true) {
@@ -63,25 +57,41 @@
     }
 
     function SetCountryArea($country_area) {
-      if($country_area == "CONTINENTAL_48" || 
-         $country_area == "FULL_50_STATES" || 
-         $country_area == "ALL" )
-        $this->country_area = $country_area;
-      else
-        $this->country_area = "";
+      switch ($country_area) {
+        case "CONTINENTAL_48":
+        case "FULL_50_STATES":
+        case "ALL":
+          $this->country_area = $country_area;
+        break;
+        default:
+          $this->country_area = "";
+        break;
+      }
     }
   }
 
-  class GoogleAlternateTaxRule {
+/*
+ * GoogleDefaultTaxRule extends GoogleTaxRule
+ */
+  class GoogleDefaultTaxRule extends GoogleTaxRule {
 
-    var $tax_rate;
+    var $shipping_taxed = false;
 
-    var $world_area = false;
-    var $country_codes_arr;
-    var $postal_patterns_arr;
-    var $state_areas_arr;
-    var $zip_patterns_arr;
-    var $country_area;
+    function GoogleDefaultTaxRule($tax_rate, $shipping_taxed = "false") {
+      $this->tax_rate = $tax_rate;
+	    $this->shipping_taxed= $shipping_taxed;
+
+      $this->country_codes_arr = array();
+      $this->postal_patterns_arr = array();
+      $this->state_areas_arr = array();
+      $this->zip_patterns_arr = array();
+    }
+  }
+  
+/*
+ * GoogleAlternateTaxRule extends GoogleTaxRule
+ */
+  class GoogleAlternateTaxRule extends GoogleTaxRule {
 
     function GoogleAlternateTaxRule($tax_rate) {
       $this->tax_rate = $tax_rate;
@@ -92,39 +102,12 @@
       $this->zip_patterns_arr = array();
     }
 
-    function SetWorldArea($world_area = true) {
-      $this->world_area = $world_area;
-    }
-
-    function AddPostalArea($country_code, $postal_pattern = "") {
-      $this->country_codes_arr[] = $country_code;
-      $this->postal_patterns_arr[]= $postal_pattern;
-    }
-
-    function SetStateAreas($areas) {
-      if(is_array($areas))
-        $this->state_areas_arr = $areas;
-      else
-        $this->state_areas_arr = array($areas);
-    }
-
-    function SetZipPatterns($zips) {
-      if(is_array($zips))
-        $this->zip_patterns_arr = $zips;
-      else
-        $this->zip_patterns_arr = array($zips);
-    }
-
-    function SetCountryArea($country_area) {
-      if($country_area == "CONTINENTAL_48" || 
-         $country_area == "FULL_50_STATES" || 
-         $country_area == "ALL" )
-        $this->country_area = $country_area;
-      else
-        $this->country_area = "";
-    }
   }
 
+
+/*
+ * GoogleAlternateTaxTable
+ */
   class GoogleAlternateTaxTable {
 
     var $name;

@@ -1,4 +1,4 @@
-Sample PHP code for integration of Google Checkout with the merchant site v1.1.2
+Sample PHP code for integration of Google Checkout with the merchant site v1.2
 --------------------------------------------------------------------------
              File structure and function
             ----------------------------
@@ -67,24 +67,34 @@ define and add XML entries by defining objects of these classes.
   ----------------------
   An instance of this class is created in the responsehandlerdemo.php.
   This again requires the merchant ID and merchant Key to be specified.
-  There are methods provided to send all the different order processing
-  commands. 
   All notifications are parsed and the merchant can take required action 
   when a particular notification is received. 
 
-  f) googleresult.php:
+  f) googlerequest.php:
+  ----------------------
+  An instance of this class is created in the responsehandlerdemo.php.
+  This again requires the merchant ID and merchant Key to be specified.
+  There are methods provided to send all the different order processing
+  commands. 
+
+  g) googlelog.php:
+  ----------------------
+  This Class provides all the loggin for the Notification sent and received from
+  the Google Checkout Integration. There are several log levels.
+
+  h) googleresult.php:
   --------------------
   This class is used for merchant-calculations and is invoked for 
   each result in the merchant-calculations-result sent from the 
   merchant in response to a callback.
   
-  g) googlemerchantcalculations.php:
+  i) googlemerchantcalculations.php:
   ----------------------------------
   In order to process merchant calculations, an instance of this
   class is created. It is used to aggregate merchant results and 
   respond with the XML response for the callback.    
 
-  h) "xml-processing" directory:
+  j) "xml-processing" directory:
   ------------------------------
 
     i) xmlbuilder.php:
@@ -103,7 +113,11 @@ define and add XML entries by defining objects of these classes.
     XML requests and responses that are received from the 
     Checkout server.
 
-3. googlemessage.log:
-The log file records all the notification and order processing commands that are 
-sent and received and can be useful information for debugging purposes.
+3. Log files:
+	a. googleerror.log:
+	The log file records all the errors in the integration with Google Checkout API 
+	system
+	b. googlemessage.log:
+	The log file records all the notification and order processing commands that are 
+	sent and received and can be useful information for debugging purposes.
 

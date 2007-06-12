@@ -1,6 +1,6 @@
 <?php
 /*
-  Copyright (C) 2006 Google Inc.
+  Copyright (C) 2007 Google Inc.
 
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
@@ -15,7 +15,15 @@
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-*/
+  
+  For more info: http://code.google.com/p/google-checkout-php-sample-code/
+
+  Upgrades (05/23/2007) ropu:
+     Remove UpdateRecursive()
+     Support for empty tags (like <world-area/>)
+     Accept multiple options in a second parameter
+*
+**/
 
 /* This uses SAX parser to convert XML data into PHP associative arrays
  * When invoking the constructor with the input data, strip out the first XML line 
@@ -66,102 +74,126 @@
   * XmlParser returns an empty params array if it encounters 
   * any error during parsing 
   */
-  class XmlParser {
+  // XML to Array
+  class xmlParser {
 
     var $params = array(); //Stores the object representation of XML data
-    var $root;
+    var $root = NULL;
     var $global_index = -1;
+    var $fold = false;
 
    /* Constructor for the class
     * Takes in XML data as input( do not include the <xml> tag
     */
-    function XmlParser($input) {
+    function xmlParser($input, $xmlParams=array(XML_OPTION_CASE_FOLDING => 0)) {
       $xmlp = xml_parser_create();
-      xml_parse_into_struct($xmlp, $input, $vals, $index);
+      foreach($xmlParams as $opt => $optVal) {
+        switch( $opt ) {
+          case XML_OPTION_CASE_FOLDING:
+            $this->fold = $optVal;
+           break;
+          default:
+           break;
+        }
+        xml_parser_set_option($xmlp, $opt, $optVal);
+      }
+      
+      if(xml_parse_into_struct($xmlp, $input, $vals, $index)) {
+        $this->root = $this->_foldCase($vals[0]['tag']);
+        $this->params = $this->xml2ary($vals);
+      }
       xml_parser_free($xmlp);
-      $this->root = strtolower($vals[0]['tag']);
-      $this->params = $this->UpdateRecursive($vals);
+    }
+    
+    function _foldCase($arg) {
+      return( $this->fold ? strtoupper($arg) : $arg);
     }
 
-   /* Returns true if a given variable represents an associative array */
-    function is_associative_array( $var ) {
-      return is_array( $var ) && !is_numeric( implode( '', array_keys( $var ) ) );
-    }
+/*
+ * Credits for the structure of this function
+ * http://mysrc.blogspot.com/2007/02/php-xml-to-array-and-backwards.html
+ * 
+ * Adapted by Ropu - 05/23/2007 
+ * 
+ */
+    function xml2ary($vals) {
 
-   /* Converts the output of SAX parser into a PHP associative array similar to the 
-    * DOM parser output
-    */
-    function UpdateRecursive($vals) {
-      $params = array();
-      $this->global_index++;
-      //Reached end of array
-      if($this->global_index >= count($vals))
-        return;
-
-      $tag = strtolower($vals[$this->global_index]['tag']);
-      if (isset(trim($vals[$this->global_index]['value']))) {
-        $value = trim($vals[$this->global_index]['value']);
-      }
-      $type = $vals[$this->global_index]['type'];
-
-      //Add attributes
-      if(isset($vals[$this->global_index]['attributes'])) {
-        foreach($vals[$this->global_index]['attributes'] as $key=>$val) {
-          $key = strtolower($key);
-          $params[$tag][$key] = $val;
-        }
-      }
-
-      if($type == 'open') {
-        $new_arr = array();
-
-        //Read all elements at the next levels and add to an array
-        while($vals[$this->global_index]['type'] != 'close' && 
-              $this->global_index < count($vals)) {
-          $arr = $this->UpdateRecursive($vals);
-          if(count($arr) > 0) {
-            $new_arr[] = $arr;
-          }
-        }
-        $this->global_index++;
-        foreach($new_arr as $arr) {
-          foreach($arr as $key=>$val) {
-            if(isset($params[$tag][$key])) {
-              //If this key already exists
-              if($this->is_associative_array($params[$tag][$key])) {
-                //If this is an associative array and not an indexed array
-                // remove exisiting value and convert to an indexed array
-                $val_key = $params[$tag][$key];
-                array_splice($params[$tag][$key], 0);
-                $params[$tag][$key][0] =  $val_key;
-                $params[$tag][$key][] =  $val;
-              } else {
-                $params[$tag][$key][] =  $val; 
-              }
-            } else {
-              $params[$tag][$key] =  $val;
+        $mnary=array();
+        $ary=&$mnary;
+        foreach ($vals as $r) {
+            $t=$r['tag'];
+            if ($r['type']=='open') {
+                if (isset($ary[$t]) && !empty($ary[$t])) {
+                    if (isset($ary[$t][0])){
+                      $ary[$t][]=array(); 
+                    }
+                    else {
+                      $ary[$t]=array($ary[$t], array());
+                    } 
+                    $cv=&$ary[$t][count($ary[$t])-1];
+                }
+                else {
+                  $cv=&$ary[$t];
+                }
+                $cv=array();
+                if (isset($r['attributes'])) { 
+                  foreach ($r['attributes'] as $k=>$v) {
+                    $cv[$k]=$v;
+                  }
+                }
+                
+                $cv['_p']=&$ary;
+                $ary=&$cv;
+    
+            } else if ($r['type']=='complete') {
+                if (isset($ary[$t]) && !empty($ary[$t])) { // same as open
+                    if (isset($ary[$t][0])) {
+                      $ary[$t][]=array();
+                    }
+                    else {
+                      $ary[$t]=array($ary[$t], array());
+                    } 
+                    $cv=&$ary[$t][count($ary[$t])-1];
+                }
+                else {
+                  $cv=&$ary[$t];
+                } 
+                if (isset($r['attributes'])) {
+                  foreach ($r['attributes'] as $k=>$v) {
+                    $cv[$k]=$v;
+                  }
+                }
+                $cv['VALUE'] = (isset($r['value']) ? $r['value'] : '');
+    
+            } elseif ($r['type']=='close') {
+                $ary=&$ary['_p'];
             }
-          }
+        }    
+        
+        $this->_del_p($mnary);
+        return $mnary;
+    }
+    
+    // _Internal: Remove recursion in result array
+    function _del_p(&$ary) {
+        foreach ($ary as $k=>$v) {
+            if ($k==='_p') {
+              unset($ary[$k]);
+            }
+            else if(is_array($ary[$k])) {
+              $this->_del_p($ary[$k]);
+            }
         }
-      }
-      else if ($type ==  'complete') {
-        if($value != '') 
-          $params[$tag]['VALUE'] = $value;
-      }
-      else {
-        $params = array();
-      }
-      return $params;
     }
 
     /* Returns the root of the XML data */
     function GetRoot() {
-      return $this->root;	
+      return $this->root; 
     }
 
     /* Returns the array representing the XML data */
     function GetData() {
-      return $this->params;	
+      return $this->params; 
     }
   }
 ?>
