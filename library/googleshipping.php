@@ -15,7 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+/*
+ * GoogleFlatRateShipping
+ */
   class GoogleFlatRateShipping {
 
     var $price;
@@ -32,7 +34,9 @@
       $this->shipping_restrictions = $restrictions;
     }
   }
-
+/*
+ * GoogleMerchantCalculatedShipping
+ */
   class GoogleMerchantCalculatedShipping {
 
     var $price;
@@ -54,7 +58,9 @@
       $this->address_filters = $filters;
     }
   }
-
+/*
+ * GoogleShippingFilters
+ */
   class GoogleShippingFilters {
 
     var $allow_us_po_box = true;
@@ -86,7 +92,6 @@
       $this->excluded_state_areas_arr = array();
       $this->excluded_zip_patterns_arr = array();
     }
-
     function SetAllowUsPoBox($allow_us_po_box = true) {
       $this->allow_us_po_box = $allow_us_po_box;
     }
@@ -95,7 +100,7 @@
       $this->allowed_restrictions = true;
       $this->allowed_world_area = $world_area;
     }
-
+    // Allows
     function AddAllowedPostalArea($country_code, $postal_pattern = "") {
       $this->allowed_restrictions = true;
       $this->allowed_country_codes_arr[] = $country_code;
@@ -103,14 +108,17 @@
     }
 
     function SetAllowedCountryArea($country_area) {
-      if($country_area == "CONTINENTAL_48" ||
-         $country_area == "FULL_50_STATES" || 
-         $country_area == "ALL" ) {
-        $this->allowed_country_area = $country_area;
-        $this->allowed_restrictions = true;
+      switch ($country_area) {
+        case "CONTINENTAL_48":
+        case "FULL_50_STATES":
+        case "ALL":
+          $this->allowed_country_area = $country_area;
+          $this->allowed_restrictions = true;
+        break;
+        default:
+          $this->allowed_country_area = "";
+        break;
       }
-      else
-        $this->allowed_country_area = "";
     }
 
     function SetAllowedStateAreas($areas) {
@@ -118,11 +126,21 @@
       $this->allowed_state_areas_arr = $areas;
     }
 
+    function AddAllowedStateArea($area) {
+      $this->allowed_restrictions = true;
+      $this->allowed_state_areas_arr[] = $area;
+    }
+
     function SetAllowedZipPattens($zips) {
       $this->allowed_restrictions = true;
       $this->allowed_zip_patterns_arr = $zips;
     }
 
+    function AddAllowedZipPatten($zip) {
+      $this->allowed_restrictions = true;
+      $this->allowed_zip_patterns_arr[] = $zip;
+    }
+    // Excludes
     function AddExcludedPostalArea($country_code, $postal_pattern = "") {
       $this->excluded_restrictions = true;
       $this->excluded_country_codes_arr[] = $country_code;
@@ -134,23 +152,39 @@
       $this->excluded_state_areas_arr = $areas;
     }
 
+    function AddExcludedStateArea($area) {
+      $this->excluded_restrictions = true;
+      $this->excluded_state_areas_arr[] = $area;
+    }
+
     function SetExcludedZipPatternsStateAreas($zips) {
       $this->excluded_restrictions = true;
       $this->excluded_zip_patterns_arr = $zips;
     }
 
+    function SetExcludedZipPatternsStateArea($zip) {
+      $this->excluded_restrictions = true;
+      $this->excluded_zip_patterns_arr[] = $zip;
+    }
+
     function SetExcludedCountryArea($country_area) {
-      if($country_area == "CONTINENTAL_48" ||
-         $country_area == "FULL_50_STATES" || 
-         $country_area == "ALL" ) {
-        $this->excluded_country_area = $country_area;
-        $this->excluded_restrictions = true;
+      switch ($country_area) {
+        case "CONTINENTAL_48":
+        case "FULL_50_STATES":
+        case "ALL":
+          $this->excluded_country_area = $country_area;
+          $this->excluded_restrictions = true;
+     		break;
+      
+      	default:
+          $this->excluded_country_area = "";
+     		break;
       }
-      else
-        $this->excluded_country_area = "";
     }
   }
-
+/*
+ * GooglePickUp
+ */
   class GooglePickUp {
 
     var $price;

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Copyright (C) 2006 Google Inc.
+ * Copyright (C) 2007 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,11 @@
     var $merchant_private_item_data;
     var $merchant_item_id;
     var $tax_table_selector;
+    var $email_delivery;
+    var $digital_content=false;
+    var $digital_description;
+    var $digital_key;
+    var $digital_url;
 
     function GoogleItem($name, $desc, $qty, $price) {
       $this->item_name = $name; 
@@ -50,6 +55,22 @@
     
     function SetTaxTableSelector($tax_selector) {
       $this->tax_table_selector = $tax_selector;  
+    }
+
+    function SetEmailDigitalDelivery($email_delivery='false') {
+      $this->digital_url = '';
+      $this->digital_key = '';
+      $this->digital_description = '';
+      $this->email_delivery = $email_delivery;  
+      $this->digital_content=true;
+    }
+    
+    function SetURLDigitalContent($digital_url, $digital_key, $digital_description) {
+      $this->digital_url = $digital_url;
+      $this->digital_key = $digital_key;
+      $this->digital_description = $digital_description;
+      $this->email_delivery = 'false';  
+      $this->digital_content = true;
     }
   }
 ?>
