@@ -28,7 +28,7 @@ v1.2 beta 06/12/2007 (ropu)
   - Changed demo/* files to show the usage of v1.2
   - Added unitTest (everyone is invited to add more test to improve coverage :)
 
-v1.2.1 07/17/2007 (ropu)
+v1.2.1 beta 07/17/2007 (ropu)
   - Added Digital Delivery support
   - Added server 2 server Checkout API Requests
   - Improved demo/* files
