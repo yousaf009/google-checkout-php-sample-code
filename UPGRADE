@@ -1,14 +1,17 @@
-Google Checkout PHP Sample Code (v1.2.1) (07/17/2007)
+Google Checkout PHP Sample Code (v1.2.5) (09/25/2007)
 
-UPGRADE FROM v1.2beta
+UPGRADE FROM v1.2.1
 
-Added      demo/digitalCart.php
 Modified   demo/cartdemo.php
-Modified   demo/responsehandlerdemo.php
-Modified   library/googleitem.php
-Modified   library/googleresponse.php
-Modified   library/googlerequest.php
 Modified   library/googlecart.php
+Modified   library/googleitem.php
+Modified   library/googlemerchantcalculations.php
+Modified   library/googlerequest.php
+Modified   library/googleresponse.php
+Modified   library/googleresult.php
+Modified   library/googleshipping.php
+Modified   library/googletax.php
 Modified   TODO
 Modified   CHANGELOG
 Modified   README
+Modified   UPGRADE
