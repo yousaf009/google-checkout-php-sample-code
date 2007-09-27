@@ -414,32 +414,31 @@
      */
 
     function SendShipItems($google_order, $items_list=array(), $send_mail="true") {
-      
-      
       $postargs = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
                   <ship-items xmlns=\"". $this->schema_url . 
-                  "\" google-order-number=\"". $google_order . "\">";
-
+                  "\" google-order-number=\"". $google_order . "\">" .
+                  "<item-shipping-information-list>\n";
       foreach($items_list as $item) {
-        $postargs .= "<item-shipping-information-list>
+        $postargs .= "<item-shipping-information>
                       <item-id>
-                        <merchant-item-id>" . $items_list->merchant_item_id . "</merchant-item-id>";
+                        <merchant-item-id>" . $item->merchant_item_id . "</merchant-item-id>
+                     </item-id>\n";
 
-        if(count($items_list->tracking_data_list)) {
-          $postargs .= "<tracking-data-list>";
-          foreach($items_list->tracking_data_list as $tracking_data) {
+        if(count($item->tracking_data_list)) {
+          $postargs .= "<tracking-data-list>\n";
+          foreach($item->tracking_data_list as $tracking_data) {
             $postargs .= "<tracking-data>
                             <carrier>". htmlentities($tracking_data['carrier']) . "</carrier>
                             <tracking-number>". $tracking_data['tracking-number'] . "</tracking-number>
-                          </tracking-data>";
+                          </tracking-data>\n";
           }
-          $postargs .= "</tracking-data-list>";
+          $postargs .= "</tracking-data-list>\n";
         }
-        $postargs .= "</item-id>
-                      </item-shipping-information-list>";
+        $postargs .= "</item-shipping-information>\n";
       }
-      $postargs .= "<send-email>". strtolower($send_mail) . "</send-email>
-                    </ship-items>";
+      $postargs .= "</item-shipping-information-list>\n" .
+                  "<send-email>". strtolower($send_mail) . "</send-email>
+                  </ship-items>";
       return $this->SendReq($this->request_url, 
                    $this->GetAuthenticationHeaders(), $postargs);       
       
@@ -462,14 +461,14 @@
       $postargs = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
                   <backorder-items xmlns=\"".
                   $this->schema_url."\" google-order-number=\"". 
-                  $google_order. "\"/>";
+                  $google_order. "\">";
+      $postargs .= "<item-ids>";
       foreach($items_list as $item) {
-        $postargs .= "<item-shipping-information-list>
-                        <item-id>
-                          <merchant-item-id>" . $items_list->merchant_item_id . "</merchant-item-id>
-                        </item-id>
-                      </item-shipping-information-list>";
+        $postargs .= "<item-id>
+                        <merchant-item-id>" . $item->merchant_item_id . "</merchant-item-id>
+                      </item-id>";
       }
+      $postargs .= "</item-ids>";
       $postargs .= "<send-email>". strtolower($send_mail) . "</send-email>
                     </backorder-items>";
       return $this->SendReq($this->request_url, 
@@ -496,14 +495,14 @@
       $postargs = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
                   <cancel-items xmlns=\"".
                   $this->schema_url."\" google-order-number=\"". 
-                  $google_order. "\"/>";
+                  $google_order. "\">";
+      $postargs .= "<item-ids>";
       foreach($items_list as $item) {
-        $postargs .= "<item-shipping-information-list>
-                        <item-id>
-                          <merchant-item-id>" . $items_list->merchant_item_id . "</merchant-item-id>
-                        </item-id>
-                      </item-shipping-information-list>";
+        $postargs .= "<item-id>
+                        <merchant-item-id>" . $item->merchant_item_id . "</merchant-item-id>
+                      </item-id>";
       }
+      $postargs .= "</item-ids>";
       $postargs .= "<send-email>". strtolower($send_mail) . "</send-email>
                   <reason>".
                     (substr(htmlentities(strip_tags($reason)),0,GOOGLE_REASON_LENGTH)) .
@@ -533,14 +532,14 @@
       $postargs = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
                   <return-items xmlns=\"".
                   $this->schema_url."\" google-order-number=\"". 
-                  $google_order. "\"/>";
+                  $google_order. "\">";
+      $postargs .= "<item-ids>";
       foreach($items_list as $item) {
-        $postargs .= "<item-shipping-information-list>
-                        <item-id>
-                          <merchant-item-id>" . $items_list->merchant_item_id . "</merchant-item-id>
-                        </item-id>
-                      </item-shipping-information-list>";
+        $postargs .= "<item-id>
+                        <merchant-item-id>" . $item->merchant_item_id . "</merchant-item-id>
+                      </item-id>";
       }
+      $postargs .= "</item-ids>";
       $postargs .= "<send-email>". strtolower($send_mail) . "</send-email>
                     </return-items>";
       return $this->SendReq($this->request_url, 
@@ -564,14 +563,14 @@
       $postargs = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
                   <reset-items-shipping-information xmlns=\"".
                   $this->schema_url."\" google-order-number=\"". 
-                  $google_order. "\"/>";
+                  $google_order. "\">";
+      $postargs .= "<item-ids>";
       foreach($items_list as $item) {
-        $postargs .= "<item-shipping-information-list>
-                        <item-id>
-                          <merchant-item-id>" . $items_list->merchant_item_id . "</merchant-item-id>
-                        </item-id>
-                      </item-shipping-information-list>";
+        $postargs .= "<item-id>
+                        <merchant-item-id>" . $item->merchant_item_id . "</merchant-item-id>
+                      </item-id>";
       }
+      $postargs .= "</item-ids>";
       $postargs .= "<send-email>". strtolower($send_mail) . "</send-email>
                     </reset-items-shipping-information>";
       return $this->SendReq($this->request_url, 

@@ -35,10 +35,14 @@ v1.2.1 beta 07/17/2007 (ropu)
   - Added digital and server 2 server examples (digitalCart.php and DigitalUsecase())
   - Minor bug fixes
 
-v1.2.5 beta 09/25/2007 (ropu)  
+v1.2.5 09/25/2007 (ropu)  
   - Added Carrier Calculation Support
   - Added Line-Item Shipping
   - Updated posting URLs
   - Added PHP Docs
   - Modified xml-processing/* class names to avoid conflics
   - Added buyNow button support CheckoutButtonNowCode()
+
+v1.2.5a 09/27/2007 (ropu)  
+  - Fixed bugs in Line-Item Shipping
+  - Added Line-Item Shipping demos
