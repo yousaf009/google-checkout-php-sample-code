@@ -458,6 +458,10 @@
             $xml_data->element('email-delivery', 
                       $this->_GetBooleanValue($item->email_delivery, "true"));
           }
+          if(!empty($item->digital_disposition)) {
+             $xml_data->element('display-disposition', 
+                                                    $item->digital_disposition);
+          }
           $xml_data->pop('digital-content');          
         }
         $xml_data->Pop('item');

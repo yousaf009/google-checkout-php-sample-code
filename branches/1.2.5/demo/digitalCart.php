@@ -13,6 +13,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * 
+ *  @version $Id: digitalCart.php 1235 2008-01-02 14:58:57Z ropu $
  */
 
  chdir("..");
@@ -42,6 +44,8 @@ function Usecase() {
   $item_1->SetURLDigitalContent('http://example.com/download.php?id=15',
                                 'S/N: 123.123123-3213',
                                 "Download Item1");
+  
+  $item_1->SetDigitalDisposition('OPTIMISTIC');                                
   $cart->AddItem($item_1);
 //  Email delivery 
   $item_2 = new GoogleItem("Email Digital Item2",      // Item name

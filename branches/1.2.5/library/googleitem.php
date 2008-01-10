@@ -17,7 +17,7 @@
 
 /**
  * Classes used to represent an item to be used for Google Checkout
- * @version $Id: googleitem.php 1234 2007-09-25 14:58:57Z ropu $
+ * @version $Id: googleitem.php 1235 2008-01-02 14:58:57Z ropu $
  */
 
  /**
@@ -42,6 +42,7 @@
     var $digital_description;
     var $digital_key;
     var $digital_url;
+    var $digital_disposition;
     
     var $item_weight;
     var $numeric_weight;
@@ -156,6 +157,26 @@
       $this->digital_description = $digital_description;
       $this->email_delivery = 'false';  
       $this->digital_content = true;
+    }
+    /**
+     * The <display-disposition> tag specifies when the buyer will be able to 
+     * access purchased digital content. 
+     * 
+     * GC tag: {@link http://code.google.com/apis/checkout/developer/Google_Checkout_XML_API_Tag_Reference.html#tag_display-disposition <display-disposition>}
+     * 
+     * @param bool $digital_disposition - The only valid values for this tag are 
+     * OPTIMISTIC and PESSIMISTIC.
+     * 
+     * @return void
+     */    
+    function SetDigitalDisposition($digital_disposition='PESSIMISTIC') {
+      switch(strtoupper($digital_disposition)) {
+        case 'OPTIMISTIC':
+          $this->digital_disposition = 'OPTIMISTIC';
+        case 'PESSIMISTIC':
+        default: 
+          $this->digital_disposition = 'PESSIMISTIC';
+      }
     }
   }
 ?>
