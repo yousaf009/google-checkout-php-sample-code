@@ -1,10 +1,13 @@
-Sample PHP code for integration of Google Checkout with the merchant site v1.2.1
+Sample PHP code for integration of Google Checkout with the merchant site v1.2.5
 --------------------------------------------------------------------------
              File structure and function
             ----------------------------
 
 There are two folders and a log file in the top level directory of 
 google-checkout-php-sample.
+
+Full docs:
+http://demo.globant.com/~brovagnati/php-sample-code/doc/1.2.5/
 
 1. "demo" directory:
 
@@ -16,6 +19,7 @@ google-checkout-php-sample.
   shipping and taxes along with different button usages.
   Check new DigitalUsecase() in order to use the new Digital Delivery API and the
   Server 2 Server API Checkout Request
+  Check CarrierCalcUsecase() for examples of Carrier Calculation Shipping
 
   b)responsehandler.php: 
   ----------------------
@@ -106,14 +110,14 @@ define and add XML entries by defining objects of these classes.
   j) "xml-processing" directory:
   ------------------------------
 
-    i) xmlbuilder.php:
+    i) gc_xmlbuilder.php:
     -----------------
     This class generates XML and consists of "push" and "pop"
     methods to add open and close tags respectively.
     This is used internally by the library classes to generate
     XML file for posting carts.
 
-    ii)xmlparser.php:
+    ii)gc_xmlparser.php:
     -----------------
     This class parses XML documents using the SAX parser and is
     compatible with PHP v4 and 5. It converts them to DOM form

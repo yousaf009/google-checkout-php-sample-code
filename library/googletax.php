@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * Copyright (C) 2006 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,10 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+ 
+ /**
+  * Classes used to handle tax rules and tables
+  */
 
-/*
- * GoogleTaxRule
- */
+  /**
+   * Represents a tax rule
+   * 
+   * @see GoogleDefaultTaxRule
+   * @see GoogleAlternateTaxRule
+   * 
+   * @abstract
+   */
   class GoogleTaxRule {
 
     var $tax_rate;
@@ -70,16 +79,18 @@
     }
   }
 
-/*
- * GoogleDefaultTaxRule extends GoogleTaxRule
- */
+  /**
+   * Represents a default tax rule
+   * 
+   * GC tag: {@link http://code.google.com/apis/checkout/developer/index.html#tag_default-tax-rule <default-tax-rule>}
+   */
   class GoogleDefaultTaxRule extends GoogleTaxRule {
 
     var $shipping_taxed = false;
 
     function GoogleDefaultTaxRule($tax_rate, $shipping_taxed = "false") {
       $this->tax_rate = $tax_rate;
-	    $this->shipping_taxed= $shipping_taxed;
+      $this->shipping_taxed= $shipping_taxed;
 
       $this->country_codes_arr = array();
       $this->postal_patterns_arr = array();
@@ -88,9 +99,11 @@
     }
   }
   
-/*
- * GoogleAlternateTaxRule extends GoogleTaxRule
- */
+  /**
+   * Represents an alternate tax rule
+   * 
+   * GC tag: {@link http://code.google.com/apis/checkout/developer/index.html#tag_alternate-tax-rule <alternate-tax-rule>}
+   */
   class GoogleAlternateTaxRule extends GoogleTaxRule {
 
     function GoogleAlternateTaxRule($tax_rate) {
@@ -105,9 +118,11 @@
   }
 
 
-/*
- * GoogleAlternateTaxTable
- */
+  /**
+   * Represents an alternate tax table
+   * 
+   * GC tag: {@link http://code.google.com/apis/checkout/developer/index.html#tag_alternate-tax-table <alternate-tax-table>}
+   */
   class GoogleAlternateTaxTable {
 
     var $name;

@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * Copyright (C) 2006 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,33 +16,53 @@
  * limitations under the License.
  */
 
- /* This class is used to create the merchant callback results  
-  * when a merchant-calculated-feedback structure is received
-  *
+ /**
+  * Used to create the merchant callback results when a 
+  * merchant-calculated feedback structure is received.
+  * 
   * Multiple results are generated depending on the possible
   * combinations for shipping options and address ids
-  *
-  * Refer demo/responsehandler.php for generating these results
+  * 
+  * More info: {@link http://code.google.com/apis/checkout/developer/index.html#understanding_merchant_calculation_results}
   */
- 
+  // refer to demo/responsehandler.php for generating these results
   class GoogleMerchantCalculations {
      var $results_arr;
      var $currency;
      var $schema_url = "http://checkout.google.com/schema/2";
 
+    /**
+     * @param string $currency the currency used for the calculations,
+     *                         one of "USD" or "GBP"
+     * 
+     * @return void
+     */
     function GoogleMerchantCalculations($currency = "USD") {
       $this->results_arr = array();
       $this->currency = $currency;
     }
 
+    /**
+     * Add a result of a merchant calculation to the response to be sent.
+     * 
+     * @param GoogleResult $results the result of a particular merchant 
+     *                              calculation
+     * @return void
+     */
     function AddResult($results) {
       $this->results_arr[] = $results;
     }
 
+    /**
+     * Builds the merchant calculation response xml to be sent to
+     * Google Checkout.
+     * 
+     * @return string the response xml
+     */
     function GetXML() {
-      require_once('xml-processing/xmlbuilder.php');
+      require_once('xml-processing/gc_xmlbuilder.php');
 
-      $xml_data = new XmlBuilder();
+      $xml_data = new gc_XmlBuilder();
       $xml_data->Push('merchant-calculation-results', 
           array('xmlns' => $this->schema_url));
       $xml_data->Push('results');

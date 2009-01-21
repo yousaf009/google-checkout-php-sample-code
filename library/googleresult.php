@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * Copyright (C) 2006 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,14 +16,14 @@
  * limitations under the License.
  */
 
- /* This class is used to create a Google Checkout result for merchant
-  * as a response to merchant-calculations feedback structure 
-  * Refer demo/responsehandlerdemo.php for usage of this code
+ /**
+  * Used to create a Google Checkout result as a response to a 
+  * merchant-calculations feedback structure, i.e shipping, tax, coupons and
+  * gift certificates.
   * 
-  * Methods are provided to set the shipping, tax, coupons and gift certificate
-  * options
+  * GC tag: {@link http://code.google.com/apis/checkout/developer/index.html#tag_result <result>}
   */
-  
+  // refer to demo/responsehandlerdemo.php for usage of this code
   class GoogleResult {
     var $shipping_name;
     var $address_id;
@@ -35,6 +35,10 @@
     var $coupon_arr = array();
     var $giftcert_arr = array();
 
+    /**
+     * @param integer $address_id the id of the anonymous address sent by 
+     *                           Google Checkout.
+     */
     function GoogleResult($address_id) {
       $this->address_id = $address_id;
     }
@@ -58,8 +62,11 @@
     }
   }
 
- /* This is a class used to return the results of coupons
-  * that the buyer entered code for on the place order page
+ /**
+  * This is a class used to return the results of coupons the buyer supplied in
+  * the order page.
+  * 
+  * GC tag: {@link http://code.google.com/apis/checkout/developer/index.html#tag_coupon-result <coupon-result>}
   */
   class GoogleCoupons {
     var $coupon_valid;
@@ -75,9 +82,13 @@
     } 
   }
 
- /* This is a class used to return the results of gift certificates
-  * that the buyer entered code for on the place order page
+ /**
+  * This is a class used to return the results of gift certificates
+  * supplied by the buyer on the place order page
+  * 
+  * GC tag: {@link http://code.google.com/apis/checkout/developer/index.html#tag_gift-certificate-result} <gift-certificate-result>
   */
+  
   class GoogleGiftcerts {
     var $gift_valid;
     var $gift_code;
