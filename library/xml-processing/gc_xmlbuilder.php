@@ -17,17 +17,20 @@
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
-/*
- * Class used to generate XML data
- * Based on sample code available at http://simon.incutio.com/code/php/XmlWriter.class.php.txt 
+/**
+ * Classes used to generate XML data
+ * Based on sample code available at http://simon.incutio.com/code/php/XmlWriter.class.php.txt
  */
 
-  class XmlBuilder {
+  /**
+   * Generates xml data
+   */
+  class gc_XmlBuilder {
     var $xml;
     var $indent;
     var $stack = array();
 
-    function XmlBuilder($indent = '  ') {
+    function gc_XmlBuilder($indent = '  ') {
       $this->indent = $indent;
       $this->xml = '<?xml version="1.0" encoding="utf-8"?>'."\n";
     }
@@ -51,7 +54,7 @@
     }
 
     //Used when an element has no subelements.
-    //Data within the open and close tags are provided with the 
+    //Data within the open and close tags are provided with the
     //contents variable
     function Element($element, $content, $attributes = array()) {
       $this->_indent();
@@ -75,7 +78,7 @@
     function Pop($pop_element) {
       $element = array_pop($this->stack);
       $this->_indent();
-      if($element !== $pop_element) 
+      if($element !== $pop_element)
         die('XML Error: Tag Mismatch when trying to close "'. $pop_element. '"');
       else
         $this->xml .= "</$element>\n";
