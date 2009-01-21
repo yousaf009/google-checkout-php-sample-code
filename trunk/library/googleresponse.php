@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * Copyright (C) 2007 Google Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,14 +19,14 @@
  /* This class is instantiated everytime any notification or 
   * order processing commands are received.
   * 
-  * It has a SendReq function to post different requests to the Google Server
-  * Send functions are provided for most of the commands that are supported
-  * by the server 
   * Refer demo/responsehandlerdemo.php for different use case scenarios 
   * for this code
   */
 
   
+  /**
+   * Handles the response to notifications sent by the Google Checkout server.
+   */
   class GoogleResponse {
     var $merchant_id;
     var $merchant_key;
@@ -38,6 +38,10 @@
     var $data=array();
     var $xml_parser;
 
+    /**
+     * @param string $id the merchant id
+     * @param string $key the merchant key
+     */
     function GoogleResponse($id=null, $key=null) {
       $this->merchant_id = $id;
       $this->merchant_key = $key;
@@ -47,6 +51,10 @@
       $this->log = new GoogleLog('', '', L_OFF);
     }
 
+    /**
+     * @param string $id the merchant id
+     * @param string $key the merchant key
+     */
     function SetMerchantAuthentication($id, $key){
       $this->merchant_id = $id;
       $this->merchant_key = $key;
@@ -56,6 +64,12 @@
       $this->log = new GoogleLog($errorLogFile, $messageLogFile, $logLevel);
     }
     
+    /**
+     * Verifies that the authentication sent by Google Checkout matches the 
+     * merchant id and key
+     * 
+     * @param string $headers the headers from the request
+     */
     function HttpAuthentication($headers=null, $die=true) {
       if(!is_null($headers)) {
         $_SERVER = $headers;
@@ -121,9 +135,16 @@
       header('HTTP/1.0 200 OK');
     }
 
+    /**
+     * Set the response header indicating an erroneous authentication from 
+     * Google Checkout
+     * 
+     * @param string $msg the message to log
+     */
     function SendFailAuthenticationStatus($msg="401 Unauthorized Access",
                                                                    $die=true) {
       $this->log->logError($msg);
+      header('WWW-Authenticate: Basic realm="GoogleCheckout PHPSample Code"');
       header('HTTP/1.0 401 Unauthorized');
       if($die) {
        die($msg); 
@@ -132,6 +153,12 @@
       }
     }
 
+    /**
+     * Set the response header indicating a malformed request from Google
+     * Checkout
+     * 
+     * @param string $msg the message to log
+     */
     function SendBadRequestStatus($msg="400 Bad Request", $die=true) {
       $this->log->logError($msg);
       header('HTTP/1.0 400 Bad Request');
@@ -142,6 +169,12 @@
       }
     }
 
+    /**
+     * Set the response header indicating that an internal error ocurred and
+     * the notification sent by Google Checkout can't be processed right now
+     * 
+     * @param string $msg the message to log
+     */
     function SendServerErrorStatus($msg="500 Internal Server Error",
                                                                    $die=true) {
       $this->log->logError($msg);
@@ -153,6 +186,9 @@
       }
     }
 
+    /**
+     * Send an acknowledgement in response to Google Checkout's request
+     */
     function SendAck($die=true) {
       $this->SendOKStatus();      
       $acknowledgment = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" .
@@ -160,20 +196,23 @@
                         $this->schema_url . "\"/>";
       $this->log->LogResponse($acknowledgment);
       if($die) {
-      die($acknowledgment);    
+        die($acknowledgment);    
       } else {
         echo $acknowledgment;    
       }
     }
     
+    /**
+     * @access private
+     */
     function GetParsedXML($request=null){
       if(!is_null($request)) {
         $this->log->LogRequest($request);
         $this->response = $request;
         ini_set('include_path', ini_get('include_path').PATH_SEPARATOR.'.');
-        require_once('xml-processing/xmlparser.php');
+        require_once('xml-processing/gc_xmlparser.php');
   
-        $this->xml_parser = new XmlParser($request);
+        $this->xml_parser = new gc_xmlparser($request);
         $this->root = $this->xml_parser->GetRoot();
         $this->data = $this->xml_parser->GetData();
       }
