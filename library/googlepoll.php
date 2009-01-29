@@ -1,13 +1,13 @@
 <?php
 /*
  * Copyright (C) 2007 Google Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,24 +23,24 @@
    * Polls for notifications
    */
   class GooglePoll {
-	
+
 	var $continue_token;
 	var $get_all_notifications = true;
 	var $has_more_notifications = true;
-	
+
 	var $merchant_id;
 	var $merchant_key;
 	var $environment;
 	var $poll_request_xml;
 	var $poll_result;
 	var $notifications = array();
-	
+
 	var $schema_url = "http://checkout.google.com/schema/2";
 	var $prod_base_server_url = "https://checkout.google.com/api/checkout/v2/reports/Merchant/";
 	var $sandbox_base_server_url = "https://sandbox.google.com/checkout/api/checkout/v2/reports/Merchant/";
 	var $server_url;
 	var $xml_data;
-	
+
 	/*
 	 * Constructor for the class
 	 * Inputs are: merchant id, merchant key, environment (default 'sandbox')
@@ -81,8 +81,8 @@
 	 */
 	function RequestData () {
 
-		//create GRequest object + post xml (googlecart.php line: 962)
-		require_once('library/googlerequest.php');
+		//create GRequest object + post xml (GoogleCart.php line: 962)
+		require_once(dirname(__FILE__).'/googlerequest.php');
 		$GRequest = new GoogleRequest($this->merchant_id, $this->merchant_key);
 
 		while($this->has_more_notifications == "true") {
@@ -115,7 +115,7 @@
 	 * and more notifications value
 	 */
 	function ExtractNotifications () {
-		require_once('xml-processing/gc_xmlparser.php');
+		require_once(dirname(__FILE__).'/xml-processing/gc_xmlparser.php');
 		$GXmlParser = new gc_xmlparser($this->poll_result[1]);
 			$data = $GXmlParser->GetData();
 			//Get the actual notifications
@@ -130,9 +130,9 @@
 	 * Builds poll request XML
 	 */
 	function GetPollRequestXML() {
-		require_once('xml-processing/gc_xmlbuilder.php');
+		require_once(dirname(__FILE__).'/xml-processing/gc_xmlbuilder.php');
 		$xml_data = new gc_XmlBuilder();
-		
+
 		$xml_data->Push('notification-data-request',
           		array('xmlns' => $this->schema_url));
         		$xml_data->Element('continue-token', $this->continue_token);
@@ -148,19 +148,19 @@
   class ContinueTokenRequest {
   	var $start_time;
 	var $continue_token;
-	
+
 	var $merchant_id;
 	var $merchant_key;
 	var $environment;
 	var $request_token_xml;
 	var $token_response_xml;
-	
+
 	var $schema_url = "http://checkout.google.com/schema/2";
 	var $prod_base_server_url = "https://checkout.google.com/api/checkout/v2/reports/Merchant/";
 	var $sandbox_base_server_url = "https://sandbox.google.com/checkout/api/checkout/v2/reports/Merchant/";
 	var $server_url;
 	var $xml_data;
-	
+
 	function ContinueTokenRequest ($id, $key, $env) {
 		$this->merchant_id = $id;
 		$this->merchant_key = $key;
@@ -184,9 +184,9 @@
 	}
 	function RequestToken () {
 		$this->request_token_xml = $this->GetTokenRequestXML();
-		
-		//create GRequest object + post xml (googlecart.php line: 962)
-		require_once('library/googlerequest.php');
+
+		//create GRequest object + post xml (GoogleCart.php line: 962)
+		require_once(dirname(__FILE__).'/googlerequest.php');
 		$GRequest = new GoogleRequest($this->merchant_id, $this->merchant_key);
 		/*---------------------------------------------------------------------------------------------------*/$GRequest->SetCertificatePath("/etc/ssl/certs/ca-certificates.crt");
 
@@ -195,7 +195,7 @@
 
 		//Check response code
 		if($this->token_response_xml[0] == "200") {
-			require_once('xml-processing/gc_xmlparser.php');
+			require_once(dirname(__FILE__).'/xml-processing/gc_xmlparser.php');
 			$GXmlParser = new gc_xmlparser($this->token_response_xml[1]);
 			$data = $GXmlParser->GetData();
 
@@ -206,9 +206,9 @@
 		else return false;
 	}
 	function GetTokenRequestXML() {
-		require_once('xml-processing/gc_xmlbuilder.php');
+		require_once(dirname(__FILE__).'/xml-processing/gc_xmlbuilder.php');
 		$xml_data = new gc_XmlBuilder();
-		
+
 		$xml_data->Push('notification-data-token-request',
           		array('xmlns' => $this->schema_url));
         		$xml_data->Element('start-time', $this->start_time);

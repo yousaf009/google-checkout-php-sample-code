@@ -49,10 +49,12 @@ v1.2.5a 09/27/2007 (ropu)
   - Fixed bugs in Line-Item Shipping
   - Added Line-Item Shipping demos
 
-v1.3 05/16/2008 (peng)
+v1.2.6 05/16/2008 (peng)
   - Added display-disposition for digital delivery
   - Changed URL/Key delivery to accept URL or Key
   - Modified server2server post to return array of status code, cart URL
+  - Fixed server2server post for PHP parsing & bug
   - Fixed Merchant-Private-Data recursive add bug
+  - Changed file path refernce to use dirname(__FILE__)
   - Added HTML signature generator
   - Added Polling API functionality

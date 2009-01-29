@@ -81,8 +81,7 @@
       $this->request_url = $this->base_url . "request/Merchant/" . $this->merchant_id;
       $this->merchant_checkout = $this->base_url . "merchantCheckout/Merchant/" . $this->merchant_id;
 
-      ini_set('include_path', ini_get('include_path').PATH_SEPARATOR.'.');
-      require_once('googlelog.php');
+      require_once(dirname(__FILE__).'/googlelog.php');
       $this->log = new GoogleLog('', '', L_OFF);
 
     }
@@ -123,22 +122,23 @@
       if($status != 200 ){
           return array($status, $body);
       } else {
-        ini_set('include_path', ini_get('include_path').PATH_SEPARATOR.'.');
-        require_once('xml-processing/gc_xmlparser.php');
+        require_once(dirname(__FILE__).'/xml-processing/gc_xmlparser.php');
 
         $xml_parser = new gc_xmlparser($body);
         $root = $xml_parser->GetRoot();
         $data = $xml_parser->GetData();
-
-        $this->log->logRequest("Redirecting to: ".
-                        $data[$root]['redirect-url']['VALUE']);
+		$redirect_url = $data[$root]['redirect-url']['VALUE'];
+		if (strpos($redirect_url, "shoppingcartshoppingcart") !== false) {
+        	$redirect_url = str_replace("shoppingcartshoppingcart","shoppingcart&shoppingcart", $redirect_url);
+        }
+        $this->log->logRequest("Redirecting to: ".$redirect_url);
 
         if($die) {
-          header('Location: ' . $data[$root]['redirect-url']['VALUE']);
-          die($data[$root]['redirect-url']['VALUE']);
+          header('Location: ' . $redirect_url);
+          die($redirect_url);
         }
         else {
-          return array(200, $data[$root]['redirect-url']['VALUE']);
+          return array(200, $redirect_url);
         }
       }
     }
