@@ -33,10 +33,10 @@
   */
 
   chdir("..");
-  require_once('library/googleresponse.php');
-  require_once('library/googlemerchantcalculations.php');
-  require_once('library/googleresult.php');
-  require_once('library/googlerequest.php');
+  require_once(dirname(__FILE__).'/library/googleresponse.php');
+  require_once(dirname(__FILE__).'/library/googlemerchantcalculations.php');
+  require_once(dirname(__FILE__).'/library/googleresult.php');
+  require_once(dirname(__FILE__).'/library/googlerequest.php');
 
   define('RESPONSE_HANDLER_ERROR_LOG_FILE', 'googleerror.log');
   define('RESPONSE_HANDLER_LOG_FILE', 'googlemessage.log');
@@ -51,7 +51,7 @@
   $Grequest = new GoogleRequest($merchant_id, $merchant_key, $server_type, $currency);
 
   //Setup the log file
-  $Gresponse->SetLogFiles(RESPONSE_HANDLER_ERROR_LOG_FILE, 
+  $Gresponse->SetLogFiles(RESPONSE_HANDLER_ERROR_LOG_FILE,
                                         RESPONSE_HANDLER_LOG_FILE, L_ALL);
 
   // Retrieve the XML sent in the HTTP POST request to the ResponseHandler
