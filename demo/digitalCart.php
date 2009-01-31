@@ -18,9 +18,9 @@
  chdir("..");
 // Include all the required files
 require_once(dirname(__FILE__).'/library/GoogleCart.php');
-require_once(dirname(__FILE__).'/library/googleitem.php');
-require_once(dirname(__FILE__).'/library/googleshipping.php');
-require_once(dirname(__FILE__).'/library/googletax.php');
+require_once(dirname(__FILE__).'/library/GoogleItem.php');
+require_once(dirname(__FILE__).'/library/GoogleShipping.php');
+require_once(dirname(__FILE__).'/library/GoogleTax.php');
 
 Usecase();
 function Usecase() {

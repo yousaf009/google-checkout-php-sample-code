@@ -33,10 +33,10 @@
   */
 
   chdir("..");
-  require_once(dirname(__FILE__).'/library/googleresponse.php');
+  require_once(dirname(__FILE__).'/library/GoogleResponse.php');
   require_once(dirname(__FILE__).'/library/googlemerchantcalculations.php');
-  require_once(dirname(__FILE__).'/library/googleresult.php');
-  require_once(dirname(__FILE__).'/library/googlerequest.php');
+  require_once(dirname(__FILE__).'/library/GoogleResult.php');
+  require_once(dirname(__FILE__).'/library/GoogleRequest.php');
 
   define('RESPONSE_HANDLER_ERROR_LOG_FILE', 'googleerror.log');
   define('RESPONSE_HANDLER_LOG_FILE', 'googlemessage.log');
