@@ -1,7 +1,7 @@
 <?php
 
 require_once('classes/phpunit.php');
-require_once('../library/googlelog.php');
+require_once('../library/GoogleLog.php');
 
 define('API_CALLBACK_ERROR_LOG', 'error.log');
 define('API_CALLBACK_MESSAGE_LOG', 'message.log');

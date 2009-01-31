@@ -245,7 +245,7 @@
      * GC tag: {@link http://code.google.com/apis/checkout/developer/index.html#tag_item <item>}
      *
      * @param GoogleItem $google_item an object that represents an item
-     *                                (defined in googleitem.php)
+     *                                (defined in GoogleItem.php)
      *
      * @return void
      */
@@ -259,7 +259,7 @@
      * GC tag: {@link http://code.google.com/apis/checkout/developer/index.html#tag_shipping-methods <shipping-methods>}
      *
      * @param object $ship an object that represents a shipping method, must be
-     *                     one of the methods defined in googleshipping.php
+     *                     one of the methods defined in GoogleShipping.php
      *
      * @return void
      */
@@ -273,7 +273,7 @@
      * GC tag: {@link http://code.google.com/apis/checkout/developer/index.html#tag_default-tax-rule <default-tax-rule>}
      *
      * @param GoogleDefaultTaxRule $rules an object that represents a default
-     *                                    tax rule (defined in googletax.php)
+     *                                    tax rule (defined in GoogleTax.php)
      *
      * @return void
      */
@@ -289,7 +289,7 @@
      *
      * @param GoogleAlternateTaxTable $tax an object that represents an
      *                                     alternate tax table
-     *                                     (defined in googletax.php)
+     *                                     (defined in GoogleTax.php)
      *
      * @return void
      */
@@ -397,7 +397,7 @@
      * @return string the cart's xml
      */
     function GetXML() {
-      require_once(dirname(__FILE__).'/xml-processing/gc_xmlbuilder.php');
+      require_once(dirname(__FILE__).'/xml-processing/gc_XmlBuilder.php');
 
       $xml_data = new gc_XmlBuilder();
 
@@ -957,7 +957,7 @@
 
     /**
      * Submit a server-to-server request.
-     * Creates a GoogleRequest object (defined in googlerequest.php) and sends
+     * Creates a GoogleRequest object (defined in GoogleRequest.php) and sends
      * it to the Google Checkout server.
      *
      * more info:
@@ -967,7 +967,7 @@
      *               and the redirect url returned by the server in index 1
      */
     function CheckoutServer2Server($proxy=array(), $certPath='') {
-      require_once(dirname(__FILE__).'/googlerequest.php');
+      require_once(dirname(__FILE__).'/GoogleRequest.php');
       $GRequest = new GoogleRequest($this->merchant_id,
                       $this->merchant_key,
                       $this->server_url=="https://checkout.google.com/"?
@@ -1318,8 +1318,8 @@
                 " onsubmit=\"setUrchinInputCode();\"":"") . ">";
 
         $request = $this->GetXML();
-        require_once(dirname(__FILE__).'/xml-processing/gc_xmlparser.php');
-        $xml_parser = new gc_xmlparser($request);
+        require_once(dirname(__FILE__).'/xml-processing/gc_XmlParser.php');
+        $xml_parser = new gc_XmlParser($request);
         $root = $xml_parser->GetRoot();
         $XMLdata = $xml_parser->GetData();
         $this->xml2html($XMLdata[$root], '', $data);

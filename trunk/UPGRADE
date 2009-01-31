@@ -6,11 +6,11 @@ Modified   demo/cartdemo.php
 Modified   library/googlecart.php
 Modified   library/googleitem.php
 Modified   library/googlemerchantcalculations.php
-Modified   library/googlerequest.php
-Modified   library/googleresponse.php
-Modified   library/googleresult.php
-Modified   library/googleshipping.php
-Modified   library/googletax.php
+Modified   library/GoogleRequest.php
+Modified   library/GoogleResponse.php
+Modified   library/GoogleResult.php
+Modified   library/GoogleShipping.php
+Modified   library/GoogleTax.php
 Modified   TODO
 Modified   CHANGELOG
 Modified   README

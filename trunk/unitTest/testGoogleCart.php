@@ -3,8 +3,8 @@
 require_once('classes/phpunit.php');
 require_once('../library/googlecart.php');
 require_once('../library/googleitem.php');
-require_once('../library/googleshipping.php');
-require_once('../library/googletax.php');
+require_once('../library/GoogleShipping.php');
+require_once('../library/GoogleTax.php');
 
 class TestGoogleCart extends TestCase {          
   function TestGoogleCart($name) {
