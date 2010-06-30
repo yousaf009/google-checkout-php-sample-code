@@ -9,10 +9,10 @@
    // Point to the correct directory
   chdir("..");
   // Include all the required files
-  require_once(dirname(__FILE__).'/library/GoogleCart.php');
-  require_once(dirname(__FILE__).'/library/GoogleItem.php');
-  require_once(dirname(__FILE__).'/library/GoogleShipping.php');
-  require_once(dirname(__FILE__).'/library/GoogleTax.php');
+  require_once('library/googlecart.php');
+  require_once('library/googleitem.php');
+  require_once('library/googleshipping.php');
+  require_once('library/googletax.php');
   UseCase2();
 
   function UseCase2() {
