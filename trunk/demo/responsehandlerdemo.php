@@ -33,16 +33,16 @@
   */
 
   chdir("..");
-  require_once(dirname(__FILE__).'/library/GoogleResponse.php');
-  require_once(dirname(__FILE__).'/library/googlemerchantcalculations.php');
-  require_once(dirname(__FILE__).'/library/GoogleResult.php');
-  require_once(dirname(__FILE__).'/library/GoogleRequest.php');
+  require_once('library/googleresponse.php');
+  require_once('library/googlemerchantcalculations.php');
+  require_once('library/googleresult.php');
+  require_once('library/googlerequest.php');
 
   define('RESPONSE_HANDLER_ERROR_LOG_FILE', 'googleerror.log');
   define('RESPONSE_HANDLER_LOG_FILE', 'googlemessage.log');
 
-  $merchant_id = "";  // Your Merchant ID
-  $merchant_key = "";  // Your Merchant Key
+  $merchant_id = "778068064150108";  // Your Merchant ID
+  $merchant_key = "rFQNe6TbiBeO44y9S9o8Dw";  // Your Merchant Key
   $server_type = "sandbox";  // change this to go live
   $currency = 'USD';  // set to GBP if in the UK
 
@@ -51,7 +51,7 @@
   $Grequest = new GoogleRequest($merchant_id, $merchant_key, $server_type, $currency);
 
   //Setup the log file
-  $Gresponse->SetLogFiles(RESPONSE_HANDLER_ERROR_LOG_FILE,
+  $Gresponse->SetLogFiles(RESPONSE_HANDLER_ERROR_LOG_FILE, 
                                         RESPONSE_HANDLER_LOG_FILE, L_ALL);
 
   // Retrieve the XML sent in the HTTP POST request to the ResponseHandler
@@ -63,10 +63,10 @@
   list($root, $data) = $Gresponse->GetParsedXML($xml_response);
   $Gresponse->SetMerchantAuthentication($merchant_id, $merchant_key);
 
-  $status = $Gresponse->HttpAuthentication();
+  /*$status = $Gresponse->HttpAuthentication();
   if(! $status) {
     die('authentication failed');
-  }
+  }*/
 
   /* Commands to send the various order processing APIs
    * Send charge order : $Grequest->SendChargeOrder($data[$root]
@@ -131,8 +131,8 @@
                   ['merchant-code-string']);
               foreach($codes as $curr_code) {
                 //Update this data as required to set whether the coupon is valid, the code and the amount
-                $coupons = new GoogleCoupons("true", $curr_code['code'], 5, "test2");
-                $merchant_result->AddCoupons($coupons);
+                $coupons = new GoogleGiftcerts("true", $curr_code['code'], 10, "debugtest");
+                $merchant_result->AddGiftCertificates($coupons);
               }
              }
              $merchant_calc->AddResult($merchant_result);
@@ -148,8 +148,8 @@
               ['merchant-code-string']);
           foreach($codes as $curr_code) {
             //Update this data as required to set whether the coupon is valid, the code and the amount
-            $coupons = new GoogleCoupons("true", $curr_code['code'], 5, "test2");
-            $merchant_result->AddCoupons($coupons);
+            $coupons = new GoogleGiftcerts("true", $curr_code['code'], 10, "debugtest");
+            $merchant_result->AddGiftCertificates($coupons);
           }
           $merchant_calc->AddResult($merchant_result);
         }

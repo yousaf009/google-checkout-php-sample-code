@@ -2,13 +2,13 @@
 
 /**
  * Copyright (C) 2007 Google Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,35 +19,35 @@
   // Point to the correct directory
   chdir("..");
   // Include all the required files
-  require_once(dirname(__FILE__).'/library/GoogleCart.php');
-  require_once(dirname(__FILE__).'/library/GoogleItem.php');
-  require_once(dirname(__FILE__).'/library/GoogleShipping.php');
-  require_once(dirname(__FILE__).'/library/GoogleTax.php');
+  require_once('library/googlecart.php');
+  require_once('library/googleitem.php');
+  require_once('library/googleshipping.php');
+  require_once('library/googletax.php');
 
-// Invoke any of the provided use cases
+  // Invoke any of the provided use cases
 //  UseCase1();
 //   UseCase2();
 //   UseCase3();
   Usecase();
   DigitalUsecase();
   CarrierCalcUsecase();
-
+  
   function Usecase() {
       echo "<h2>Standard Checkout Request</h2>";
-      $merchant_id = "778068064150108";  // Your Merchant ID
-      $merchant_key = "rFQNe6TbiBeO44y9S9o8Dw";  // Your Merchant Key
+      $merchant_id = "";  // Your Merchant ID
+      $merchant_key = "";  // Your Merchant Key
       $server_type = "sandbox";
       $currency = "USD";
       $cart = new GoogleCart($merchant_id, $merchant_key, $server_type,
       $currency);
       $total_count = 12;
-
+      
       $item_1 = new GoogleItem("item name",      // Item name
                                "item desc", // Item      description
                                $total_count, // Quantity
                                10); // Unit price
       $cart->AddItem($item_1);
-
+      
       // Add shipping options
       if($total_count < 3){
              $ship_1 = new GoogleFlatRateShipping("USPS Priority Mail", 4.55);
@@ -56,25 +56,25 @@
       }
       $Gfilter = new GoogleShippingFilters();
       $Gfilter->SetAllowedCountryArea('CONTINENTAL_48');
-
+      
       $ship_1->AddShippingRestrictions($Gfilter);
-
+      
       $cart->AddShipping($ship_1);
-
+      
       // Add tax rules
       $tax_rule = new GoogleDefaultTaxRule(0.05);
       $tax_rule->SetStateAreas(array("MA"));
       $cart->AddDefaultTaxRules($tax_rule);
-
+      
       // Specify <edit-cart-url>
       $cart->SetEditCartUrl("https://www.example.com/cart/");
-
+      
       // Specify "Return to xyz" link
       $cart->SetContinueShoppingUrl("https://www.example.com/goods/");
-
+      
       // Request buyer's phone number
       $cart->SetRequestBuyerPhone(true);
-
+      
       // Display Google Checkout button
       echo $cart->CheckoutButtonCode("SMALL");
   }
@@ -83,10 +83,10 @@
 // Checkout API Requests
 // http://code.google.com/apis/checkout/developer/index.html#alternate_technique
 // It will only display the GC button, and when you click on it it will redirect
-// to a script ('digitalCart.php') that will create the cart, send it to google
+// to a script ('digitalCart.php') that will create the cart, send it to google 
 // Checkout and redirect the buyer to the corresponding page
   function DigitalUsecase() {
-    echo "<h2>Server 2 Server Checkout Request</h2>";
+    echo "<h2>Server 2 Server Checkout Request</h2>";   
     $merchant_id = "";  // Your Merchant ID
     $merchant_key = "";  // Your Merchant Key
     $server_type = "sandbox";
@@ -103,7 +103,7 @@
     $merchant_key = "";  // Your Merchant Key
     $server_type = "sandbox";
     $currency = "USD";
-    $cart = new GoogleCart($merchant_id, $merchant_key, $server_type, $currency);
+    $cart = new GoogleCart($merchant_id, $merchant_key, $server_type, $currency); 
 
     // Add items to the cart
     $item_1 = new GoogleItem("MegaSound 2GB MP3 Player", // Item name
@@ -113,8 +113,8 @@
                              'LB',
                              15); //weigth
     $item_1->SetMerchantItemId('MS_2GB');
-    $item_2 = new GoogleItem("AA Rechargeable Battery Pack",
-                             "Battery pack containing four AA rechargeable batteries",
+    $item_2 = new GoogleItem("AA Rechargeable Battery Pack", 
+                             "Battery pack containing four AA rechargeable batteries", 
                              1 , // Quantity
                              11.59,// Unit price
                              'LB',
@@ -138,14 +138,14 @@
     $Gshipping->addCarrierCalculatedShippingOptions($CCSoption);
     $CCSoption = new GoogleCarrierCalculatedShippingOption("24.99", "FedEx", "2Day", "0", "10", 'REGULAR_PICKUP');
     $Gshipping->addCarrierCalculatedShippingOptions($CCSoption);
-
+    
     $CCSoption = new GoogleCarrierCalculatedShippingOption("11.99", "UPS", "Ground", "0.99", "5", 'REGULAR_PICKUP');
     $Gshipping->addCarrierCalculatedShippingOptions($CCSoption);
     $CCSoption = new GoogleCarrierCalculatedShippingOption("18.99", "UPS", "3 Day Select");
     $Gshipping->addCarrierCalculatedShippingOptions($CCSoption);
     $CCSoption = new GoogleCarrierCalculatedShippingOption("20.99", "UPS", "Next Day Air", "0", "10", 'REGULAR_PICKUP');
     $Gshipping->addCarrierCalculatedShippingOptions($CCSoption);
-
+    
     $CCSoption = new GoogleCarrierCalculatedShippingOption("9.99", "USPS", "Media Mail", "0", "2", 'REGULAR_PICKUP');
     $Gshipping->addCarrierCalculatedShippingOptions($CCSoption);
     $CCSoption = new GoogleCarrierCalculatedShippingOption("15.99", "USPS", "Parcel Post");
@@ -191,15 +191,15 @@
     $merchant_key = "";  // Your Merchant Key
     $server_type = "sandbox";
     $currency = "USD";
-    $cart = new GoogleCart($merchant_id, $merchant_key, $server_type, $currency);
+    $cart = new GoogleCart($merchant_id, $merchant_key, $server_type, $currency); 
 
     // Add items to the cart
     $item_1 = new GoogleItem("MegaSound 2GB MP3 Player", // Item name
                              "Portable MP3 player - stores 500 songs", // Item description
                              1, // Quantity
                              175.49); // Unit price
-    $item_2 = new GoogleItem("AA Rechargeable Battery Pack",
-                             "Battery pack containing four AA rechargeable batteries",
+    $item_2 = new GoogleItem("AA Rechargeable Battery Pack", 
+                             "Battery pack containing four AA rechargeable batteries", 
                              1 , // Quantity
                              11.59); // Unit price
     $cart->AddItem($item_1);
@@ -255,7 +255,7 @@
 
     // Display Google Checkout button
     echo $cart->CheckoutButtonCode("LARGE");
-  }
+  }  
 
   function UseCase2() {
     // Create a new shopping cart object
@@ -263,14 +263,14 @@
     $merchant_key = "";  // Your Merchant Key
     $server_type = "sandbox";
     $currency = "USD";
-    $cart = new GoogleCart($merchant_id, $merchant_key, $server_type, $currency);
+    $cart = new GoogleCart($merchant_id, $merchant_key, $server_type, $currency); 
 
     // Add items to the cart
-    $item_1 = new GoogleItem("Dry Food Pack AA1453",
+    $item_1 = new GoogleItem("Dry Food Pack AA1453", 
         "A pack of highly nutritious dried food for emergency", 2, 24.99);
     $item_1->SetTaxTableSelector("food");
 
-    $item_2 = new GoogleItem("MegaSound 2GB MP3 Player",
+    $item_2 = new GoogleItem("MegaSound 2GB MP3 Player", 
         "Portable MP3 player - stores 500 songs", 1, 175.49);
     $item_2->SetMerchantPrivateItemData(
                       new MerchantPrivateItemData(array("color" => "blue",
@@ -350,10 +350,10 @@
     $merchant_key = "";  // Your Merchant Key
     $server_type = "sandbox";
     $currency = "USD";
-    $cart = new GoogleCart($merchant_id, $merchant_key, $server_type, $currency);
+    $cart = new GoogleCart($merchant_id, $merchant_key, $server_type, $currency); 
 
     // Add items to the cart
-    $item = new GoogleItem("MegaSound 2GB MP3 Player",
+    $item = new GoogleItem("MegaSound 2GB MP3 Player", 
         "Portable MP3 player - stores 500 songs", 1, 175.49);
     $item->SetMerchantPrivateItemData("<color>blue</color><weight>3.2</weight>");
     $cart->AddItem($item);
@@ -380,7 +380,7 @@
     $address_filter->AddAllowedPostalArea("US");
     $address_filter->SetAllowUsPoBox(false);
     $ship->AddAddressFilters($address_filter);
-
+    
     $cart->AddShipping($ship);
 
     // Set default tax options

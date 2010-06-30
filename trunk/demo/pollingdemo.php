@@ -2,13 +2,13 @@
 <?php
 /*
  * Copyright (C) 2007 Google Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,10 +20,10 @@
 chdir("..");
 
 // Include all the required files
-require_once(dirname(__FILE__).'/library/GooglePoll.php');
+require_once('library/googlepoll.php');
 
-$merchant_id = "";
-$merchant_key = "";
+$merchant_id = "563676382451138";
+$merchant_key = "zvoEMXHhkdhVtGEOju2lHw";
 $environment = "sandbox";
 $tokenRequest = new ContinueTokenRequest($merchant_id, $merchant_key, $environment);
 $tokenRequest->SetStartTime("2008-04-01T18:25:31");
@@ -36,9 +36,9 @@ if($contToken !="false") {
 
 	if($pollSuccessful == true) {
 		$notifications = $poll->GetNotifications();
-
+		
 		echo "Total Number of Notifications retrieved: " .sizeof($notifications) ."<br><br>";
-
+		
 		foreach($notifications as $notification) {
 			print_r($notification );
 			echo "<br><br>";
