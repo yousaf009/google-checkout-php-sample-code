@@ -83,7 +83,7 @@
       $this->merchant_checkout = $this->base_url . "merchantCheckout/Merchant/" . $this->merchant_id;
 
       ini_set('include_path', ini_get('include_path').PATH_SEPARATOR.'.');
-      require_once('googlelog.php');
+      require_once(dirname(__FILE__).'/googlelog.php');
       $this->log = new GoogleLog('', '', L_OFF);
       
     }
@@ -124,8 +124,7 @@
       if($status != 200 ){
           return array($status, $body);
       } else {
-        ini_set('include_path', ini_get('include_path').PATH_SEPARATOR.'.');
-        require_once('xml-processing/gc_xmlparser.php');
+        require_once(dirname(__FILE__).'/xml-processing/gc_xmlparser.php');
   
         $xml_parser = new gc_xmlparser($body);
         $root = $xml_parser->GetRoot();
@@ -712,11 +711,20 @@
         curl_close($session);
       }
       $heads = $this->parse_headers($response);
-      $body = $this->get_body_x($response);
-            
+      $body_xml = $this->get_body_x($response);
+      
+      try {
+        $b_e = new SimpleXMLElement($body_xml);
+        if ($b_e and !empty($b_e->{'error-message'})) {
+          $body = implode(",\n", $b_e->{'error-message'}->getChildren());
+        }
+      } catch (Exception $e) {
+        //$body = htmlentities($b_x);
+      }
 //      // Get HTTP Status code from the response
       $status_code = array();
       preg_match('/\d\d\d/', $heads[0], $status_code);
+     
       
       // Check for errors
       switch( $status_code[0] ) {
