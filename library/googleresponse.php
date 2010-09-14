@@ -46,7 +46,7 @@
       $this->merchant_id = $id;
       $this->merchant_key = $key;
       $this->schema_url = "http://checkout.google.com/schema/2";
-      require_once('googlelog.php');
+      require_once(dirname(__FILE__).'/googlelog.php');
       $this->log = new GoogleLog('', '', L_OFF);
     }
 

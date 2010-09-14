@@ -397,7 +397,7 @@
      * @return string the cart's xml
      */
     function GetXML() {
-      require_once('xml-processing/gc_xmlbuilder.php');
+      require_once(dirname(__FILE__).'/xml-processing/gc_xmlbuilder.php');
 
       $xml_data = new gc_XmlBuilder();
 
@@ -1030,8 +1030,7 @@
      *               and the redirect url returned by the server in index 1
      */
     function CheckoutServer2Server($proxy=array(), $certPath='') {
-      ini_set('include_path', ini_get('include_path').PATH_SEPARATOR.'.');
-      require_once('library/googlerequest.php');
+      require_once(dirname(__FILE__).'/library/googlerequest.php');
       $GRequest = new GoogleRequest($this->merchant_id, 
                       $this->merchant_key, 
                       $this->server_url=="https://checkout.google.com/"?
@@ -1099,17 +1098,17 @@
       }
       $data = "<div style=\"width: ".$width."px\">";
       if ($this->variant == "text") {
-        $data .= "<div align=center><form method=\"POST\" action=\"". 
+        $data .= "<div align=\"center\"><form method=\"post\" action=\"".
                 $url . "\"" . ($this->googleAnalytics_id?
                 " onsubmit=\"setUrchinInputCode();\"":"") . ">
                 <input type=\"image\" name=\"Checkout\" alt=\"Checkout\" 
                 src=\"". $this->server_url."buttons/checkout.gif?merchant_id=" .
-                $this->merchant_id."&w=".$width. "&h=".$height."&style=".
-                $style."&variant=".$this->variant."&loc=".$loc."\" 
-                height=\"".$height."\" width=\"".$width. "\" />";
+                $this->merchant_id."&amp;w=".$width. "&amp;h=".$height."&amp;style=".
+                $style."&amp;variant=".$this->variant."&amp;loc=".$loc."\" 
+                style=\"height:".$height."px;width:".$width. "px\" />";
                 
         if($this->googleAnalytics_id) {
-          $data .= "<input type=\"hidden\" name=\"analyticsdata\" value=\"\">";
+          $data .= "<input type=\"hidden\" name=\"analyticsdata\" value=\"\" />";
         }                
         $data .= "</form></div>";
         if($this->googleAnalytics_id) {                
@@ -1127,8 +1126,8 @@
         }      } else {
         $data .= "<div><img alt=\"Checkout\" src=\"" .
                 "". $this->server_url."buttons/checkout.gif?merchant_id=" .
-                "".$this->merchant_id."&w=".$width. "&h=".$height."&style=".$style.
-                "&variant=".$this->variant."&loc=".$loc."\" height=\"".$height."\"".
+                "".$this->merchant_id."&amp;w=".$width. "&amp;h=".$height."&amp;style=".$style.
+                "&amp;variant=".$this->variant."&amp;loc=".$loc."\" height=\"".$height."\"".
                 " width=\"".$width. "\" /></div>";
         
       }
@@ -1191,7 +1190,7 @@
       
       $data = "<div style=\"width: ".$width."px\">";
       if ($this->variant == "text") {
-        $data .= "<div align=center><form method=\"POST\" action=\"". 
+        $data .= "<div align=\"center\"><form method=\"post\" action=\"".
                 $this->checkout_url . "\"" . ($this->googleAnalytics_id?
                 " onsubmit=\"setUrchinInputCode();\"":"") . ">
                 <input type=\"hidden\" name=\"cart\" value=\"". 
@@ -1200,12 +1199,12 @@
                 base64_encode($this->CalcHmacSha1($this->GetXML())). "\"> 
                 <input type=\"image\" name=\"Checkout\" alt=\"Checkout\" 
                 src=\"". $this->server_url."buttons/checkout.gif?merchant_id=" .
-                $this->merchant_id."&w=".$width. "&h=".$height."&style=".
-                $style."&variant=".$this->variant."&loc=".$loc."\" 
-                height=\"".$height."\" width=\"".$width. "\" />";
+                $this->merchant_id."&amp;w=".$width. "&amp;h=".$height."&amp;style=".
+                $style."&amp;variant=".$this->variant."&amp;loc=".$loc."\" 
+                style=\"height:".$height."px;width:".$width. "px\" />";
                 
         if($this->googleAnalytics_id) {
-          $data .= "<input type=\"hidden\" name=\"analyticsdata\" value=\"\">";
+          $data .= "<input type=\"hidden\" name=\"analyticsdata\" value=\"\" />";
         }                
         $data .= "</form></div>";
         if($this->googleAnalytics_id) {                
@@ -1224,8 +1223,8 @@
       } else {
         $data .= "<div><img alt=\"Checkout\" src=\"" .
             "". $this->server_url."buttons/checkout.gif?merchant_id=" .
-            "".$this->merchant_id."&w=".$width. "&h=".$height."&style=".$style.
-            "&variant=".$this->variant."&loc=".$loc."\" height=\"".$height."\"".
+            "".$this->merchant_id."&amp;w=".$width. "&amp;h=".$height."&amp;style=".$style.
+            "&amp;variant=".$this->variant."&amp;loc=".$loc."\" height=\"".$height."\"".
             " width=\"".$width. "\" /></div>";
       }
       if($showtext) {
@@ -1272,7 +1271,7 @@
       
       $data = "<div style=\"width: ".$width."px\">";
       if ($this->variant == "text") {
-        $data .= "<div align=center><form method=\"POST\" action=\"". 
+        $data .= "<div align=\"center\"><form method=\"post\" action=\"".
                 $this->checkout_url . "\"" . ($this->googleAnalytics_id?
                 " onsubmit=\"setUrchinInputCode();\"":"") . ">
                 <input type=\"hidden\" name=\"buyButtonCart\" value=\"". 
@@ -1280,12 +1279,12 @@
                 base64_encode($this->CalcHmacSha1($this->GetXML())) . "\">
                 <input type=\"image\" name=\"Checkout\" alt=\"BuyNow\" 
                 src=\"". $this->server_url."buttons/buy.gif?merchant_id=" .
-                $this->merchant_id."&w=".$width. "&h=".$height."&style=".
-                $style."&variant=".$this->variant."&loc=".$loc."\" 
-                height=\"".$height."\" width=\"".$width. "\" />";
+                $this->merchant_id."&amp;w=".$width. "&amp;h=".$height."&amp;style=".
+                $style."&amp;variant=".$this->variant."&amp;loc=".$loc."\" 
+                style=\"height:".$height."px;width:".$width. "px\" />";
                 
         if($this->googleAnalytics_id) {
-          $data .= "<input type=\"hidden\" name=\"analyticsdata\" value=\"\">";
+          $data .= "<input type=\"hidden\" name=\"analyticsdata\" value=\"\" />";
         }                
         $data .= "</form></div>";
         if($this->googleAnalytics_id) {                
@@ -1377,12 +1376,12 @@
       
       $data = "<div style=\"width: ".$width."px\">";
       if ($this->variant == "text") {
-        $data .= "<div align=\"center\"><form method=\"POST\" action=\"". 
+        $data .= "<div align=\"center\"><form method=\"post\" action=\"". 
                 $this->checkoutForm_url . "\"" . ($this->googleAnalytics_id?
                 " onsubmit=\"setUrchinInputCode();\"":"") . ">";
 
         $request = $this->GetXML();
-        require_once('xml-processing/gc_xmlparser.php');
+        require_once(dirname(__FILE__).'/xml-processing/gc_xmlparser.php');
         $xml_parser = new gc_xmlparser($request);
         $root = $xml_parser->GetRoot();
         $XMLdata = $xml_parser->GetData();
@@ -1394,7 +1393,7 @@
                 height=\"".$height."\" width=\"".$width. "\" />";
                 
         if($this->googleAnalytics_id) {
-          $data .= "<input type=\"hidden\" name=\"analyticsdata\" value=\"\">";
+          $data .= "<input type=\"hidden\" name=\"analyticsdata\" value=\"\" />";
         }                
         $data .= "</form></div>";
         if($this->googleAnalytics_id) {                
@@ -1413,8 +1412,8 @@
       } else {
         $data .= "<div align=\"center\"><img alt=\"Checkout\" src=\"" .
             "". $this->server_url."buttons/checkout.gif?merchant_id=" .
-            "".$this->merchant_id."&w=".$width. "&h=".$height."&style=".$style.
-            "&variant=".$this->variant."&loc=".$loc."\" height=\"".$height."\"".
+            "".$this->merchant_id."&amp;w=".$width. "&amp;h=".$height."&amp;style=".$style.
+            "&amp;variant=".$this->variant."&amp;loc=".$loc."\" height=\"".$height."\"".
             " width=\"".$width. "\" /></div>";
       }
       if($showtext){
