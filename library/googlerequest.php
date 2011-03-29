@@ -716,22 +716,21 @@
       try {
         $b_e = new SimpleXMLElement($body_xml);
         if ($b_e and !empty($b_e->{'error-message'})) {
-          $body = implode(",\n", $b_e->{'error-message'}->getChildren());
+          $body = $b_e->{'error-message'};
         }
       } catch (Exception $e) {
         //$body = htmlentities($b_x);
       }
-//      // Get HTTP Status code from the response
+      // Get HTTP Status code from the response
       $status_code = array();
       preg_match('/\d\d\d/', $heads[0], $status_code);
-     
-      
+          
       // Check for errors
       switch( $status_code[0] ) {
         case 200:
           // Success
             $this->log->LogResponse($response);          
-            return array(200, $body);
+            return array(200, $body_xml);
           break;
         case 503:
             $this->log->LogError($response);
