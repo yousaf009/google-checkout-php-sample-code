@@ -195,7 +195,7 @@
 
 		//Check response code
 		if($this->token_response_xml[0] == "200") {
-			require_once('xml-processing/gc_XmlParser.php');
+			require_once('xml-processing/gc_xmlparser.php');
 			$GXmlParser = new gc_XmlParser($this->token_response_xml[1]);
 			$data = $GXmlParser->GetData();
 
