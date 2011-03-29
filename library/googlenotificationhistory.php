@@ -83,7 +83,7 @@
        }
        if(isset($st) && isset($et)){
          $postargs .= "<start-time>".$st."</start-time>";
-         $postargs .= "<end-time".$et."</end-time>";
+         $postargs .= "<end-time>".$et."</end-time>";
        }
      }
      $postargs .= "</notification-history-request>";
