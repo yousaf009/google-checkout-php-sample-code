@@ -42,6 +42,7 @@
   $merchant_key = "";  // Your Merchant Key
   $server_type = "sandbox";  // change this to go live
   $currency = 'USD';  // set to GBP if in the UK
+  $certificate_path = ""; // set your SSL CA cert path
   
   //Create the response object
   $Gresponse = new GoogleResponse($merchant_id, $merchant_key);
@@ -115,6 +116,7 @@
       $google_order_number = $data[$root]['google-order-number']['VALUE'];
       $tracking_data = array("Z12345" => "UPS", "Y12345" => "Fedex");
       $GChargeRequest = new GoogleRequest($merchant_id, $merchant_key, $server_type);
+      $GRequest->SetCertificatePath($certificate_path);
       $GChargeRequest->SendChargeAndShipOrder($google_order_number, $tracking_data);
       break;
     }
@@ -130,7 +132,7 @@
     case "invalid-order-numbers": {
       break;
     }
-    case "order-state-cahnge-notification": {
+    case "order-state-change-notification": {
       break;
     }
     default: {
