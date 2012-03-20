@@ -686,13 +686,10 @@
       curl_setopt($session, CURLOPT_HEADER, true);
       curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
 
-      if(!empty($this->certPath) && file_exists($this->certPath)) {
-        curl_setopt($session, CURLOPT_SSL_VERIFYPEER, true);
+      if(!empty($this->certPath) && file_exists($this->certPath)) {      
         curl_setopt($session, CURLOPT_CAINFO, $this->certPath);
       }
-      else {
-        curl_setopt($session, CURLOPT_SSL_VERIFYPEER, false);
-      }
+        curl_setopt($session, CURLOPT_SSL_VERIFYPEER, true);
 
       if(is_array($this->proxy) && count($this->proxy)) {
          curl_setopt($session, CURLOPT_PROXY, 

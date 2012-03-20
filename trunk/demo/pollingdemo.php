@@ -22,15 +22,17 @@ chdir("..");
 // Include all the required files
 require_once('library/googlepoll.php');
 
-$merchant_id = "563676382451138";
-$merchant_key = "zvoEMXHhkdhVtGEOju2lHw";
+$merchant_id = "";
+$merchant_key = "";
 $environment = "sandbox";
-$tokenRequest = new ContinueTokenRequest($merchant_id, $merchant_key, $environment);
-$tokenRequest->SetStartTime("2008-04-01T18:25:31");
+$certificate_path = ""; // set your SSL CA cert path
+
+$tokenRequest = new ContinueTokenRequest($merchant_id, $merchant_key, $environment, $certificate_path);
+$tokenRequest->SetStartTime("2012-01-01T18:25:31");
 $contToken = $tokenRequest->RequestToken();
 
 if($contToken !="false") {
-	$poll = new GooglePoll($merchant_id, $merchant_key, $environment, $contToken);
+	$poll = new GooglePoll($merchant_id, $merchant_key, $environment, $contToken, $certificate_path);
 	$poll->GetAllNotifications(false);
 	$pollSuccessful = $poll->RequestData();
 

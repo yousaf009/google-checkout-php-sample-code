@@ -41,14 +41,16 @@
   define('RESPONSE_HANDLER_ERROR_LOG_FILE', 'googleerror.log');
   define('RESPONSE_HANDLER_LOG_FILE', 'googlemessage.log');
 
-  $merchant_id = "778068064150108";  // Your Merchant ID
-  $merchant_key = "rFQNe6TbiBeO44y9S9o8Dw";  // Your Merchant Key
+  $merchant_id = "";  // Your Merchant ID
+  $merchant_key = "";  // Your Merchant Key
   $server_type = "sandbox";  // change this to go live
   $currency = 'USD';  // set to GBP if in the UK
-
+  $certificate_path = ""; // set your SSL CA cert path
+  
   $Gresponse = new GoogleResponse($merchant_id, $merchant_key);
 
   $Grequest = new GoogleRequest($merchant_id, $merchant_key, $server_type, $currency);
+  $GRequest->SetCertificatePath($certificate_path);
 
   //Setup the log file
   $Gresponse->SetLogFiles(RESPONSE_HANDLER_ERROR_LOG_FILE, 

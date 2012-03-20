@@ -32,8 +32,10 @@
   $merchant_key = "";  // Your Merchant Key
   $server_type = "sandbox";  // change this to go live
   $currency = 'USD';  // set to GBP if in the UK
-
+  $certificate_path = ""; // set your SSL CA cert path
+  
   $Grequest = new GoogleRequest($merchant_id, $merchant_key, $server_type, $currency);
+  $GRequest->SetCertificatePath($certificate_path);
 
   $item1 = new GoogleShipItem('SKU_1');
   $item1->AddTrackingData('USPS','123123adjsh123');
