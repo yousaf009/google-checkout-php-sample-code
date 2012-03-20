@@ -31,6 +31,8 @@ function Usecase() {
   $cart = new GoogleCart($merchant_id, $merchant_key, $server_type,
   $currency);
   $total_count = 1;
+  $certificate_path = ""; // set your SSL CA cert path
+  
 //  Check this URL for more info about the two types of digital Delivery
 //  http://code.google.com/apis/checkout/developer/Google_Checkout_Digital_Delivery.html
 
@@ -72,7 +74,7 @@ function Usecase() {
 // This will do a server-2-server cart post and send an HTTP 302 redirect status
 // This is the best way to do it if implementing digital delivery
 // More info http://code.google.com/apis/checkout/developer/index.html#alternate_technique
-  list($status, $error) = $cart->CheckoutServer2Server();
+  list($status, $error) = $cart->CheckoutServer2Server('', $certificate_path);
   // if i reach this point, something was wrong
   echo "An error had ocurred: <br />HTTP Status: " . $status. ":";
   echo "<br />Error message:<br />";

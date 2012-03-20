@@ -32,10 +32,11 @@
   $merchant_key = "";  // Your Merchant Key
   $server_type = "sandbox";  // change this to go live
   $currency = 'USD';  // set to GBP if in the UK
-  $google_order_id = ""; //google order id of recurrence order
+  $certificate_path = ""; // set your SSL certificate path
+  $google_order_id = ""; // set your SSL CA cert path
   
   $Grequest = new GoogleRequest($merchant_id, $merchant_key, $server_type, $currency);
-  
+  $GRequest->SetCertificatePath($certificate_path);
   $item1 = new GoogleItem("recurring item", "recurring item fee", 1, 30.00);
   $item1->SetCurrency($currency);
   $items = array($item1);
